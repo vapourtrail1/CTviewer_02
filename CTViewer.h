@@ -44,6 +44,9 @@ private:
     QPointer<QPushButton> btnOpenFile_;
     QPointer<QPushButton> btnCreateProject_;
     QPointer<QPushButton> btnLoadDemo_;
+    // 欢迎页顶栏的「撤回 / 不撤回」按钮
+    QPointer<QPushButton> btnUndo_;
+    QPointer<QPushButton> btnKeep_;
     // 最近项目表格
     QPointer<QTableWidget> tableRecent_;
     // ҳ
