@@ -1,0 +1,61 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+ipch/
+*.opendb
+
+# Build 输出（按你当前结构）
+/x64/
+/CTViewer/x64/
+/Debug/
+/Release/
+/build/
+/out/
+/bin/
+/obj/
+
+# 编译产物与中间文件
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.log
+*.tlog
+*.lastbuildstate
+*.pch
+*.ipch
+*.cache
+
+# 可执行&动态库
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Qt 生成文件
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*.qmake.stash
+qt/
+.qmake.stash
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+_generated/
+
+# 其他临时文件
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
