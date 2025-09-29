@@ -85,6 +85,37 @@ void CTViewer::buildWelcomePage()
     vl->setContentsMargins(18, 18, 18, 18);
     vl->setSpacing(16);
 
+    // 顶部操作条：设置黑色背景并在中间显示产品名称，同时加入两个操作按钮。
+    auto topBar = new QFrame(pageWelcome_);
+    topBar->setObjectName(QStringLiteral("topBar"));
+    topBar->setStyleSheet(QStringLiteral(
+        "QFrame#topBar{background:#202020; border-radius:10px;}"
+        "QFrame#topBar QLabel{color:#f5f5f5; font-size:16px; font-weight:600;}"
+        "QFrame#topBar QPushButton{background:#2f2f2f; color:#f5f5f5; border:1px solid #3c3c3c;"
+        " border-radius:6px; padding:8px 18px;}"
+        "QFrame#topBar QPushButton:hover{background:#3a3a3a; border-color:#4d6fff;}"));
+    auto topLayout = new QHBoxLayout(topBar);
+    topLayout->setContentsMargins(20, 10, 20, 10);
+    topLayout->setSpacing(12);
+
+    btnUndo_ = new QPushButton(QStringLiteral("撤回"), topBar);
+    btnUndo_->setCursor(Qt::PointingHandCursor);
+    topLayout->addWidget(btnUndo_);
+
+    topLayout->addStretch();
+
+    auto productLabel = new QLabel(QStringLiteral("VGStudio-Lite"), topBar);
+    productLabel->setAlignment(Qt::AlignCenter);
+    topLayout->addWidget(productLabel);
+
+    topLayout->addStretch();
+
+    btnKeep_ = new QPushButton(QStringLiteral("不撤回"), topBar);
+    btnKeep_->setCursor(Qt::PointingHandCursor);
+    topLayout->addWidget(btnKeep_);
+
+    vl->addWidget(topBar);
+
     // 顶部横幅，显示产品名称与版本信息。
     auto banner = new QFrame(pageWelcome_);
     banner->setObjectName(QStringLiteral("heroBanner"));
@@ -396,6 +427,14 @@ void CTViewer::wireSignals()
         [goToSlices](QTableWidgetItem* item) {
             const QString projectName = item ? item->text() : QStringLiteral("项目");
             goToSlices(QStringLiteral("正在打开 %1 ...").arg(projectName));
+        });
+
+    // 顶栏按钮点击后在状态栏提示当前操作，模拟撤回/保持逻辑。
+    connect(btnUndo_, &QPushButton::clicked, this, [this]() {
+        statusBar()->showMessage(QStringLiteral("已执行撤回操作"), 1500);
+        });
+    connect(btnKeep_, &QPushButton::clicked, this, [this]() {
+        statusBar()->showMessage(QStringLiteral("保持当前更改"), 1500);
         });
 
     // WW/WL 双向联动（UI 级）
