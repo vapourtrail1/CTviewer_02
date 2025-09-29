@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QToolButton>
+#include <QSizePolicy>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -20,6 +22,9 @@
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QAbstractItemView>
+#include <QStyle>
+#include <QMouseEvent>
+#include <QEvent>
 
 #if USE_VTK
 #include <QVTKOpenGLNativeWidget.h>
@@ -30,6 +35,9 @@
 CTViewer::CTViewer(QWidget* parent)
     : QMainWindow(parent)
 {
+    // ---- 启用自定义无边框窗口，以便自行绘制标题栏 ----
+    setWindowFlag(Qt::FramelessWindowHint);
+
     setWindowTitle(QStringLiteral("VGStudio-Lite"));
     resize(1280, 820);
 
@@ -38,6 +46,9 @@ CTViewer::CTViewer(QWidget* parent)
         "QMainWindow{background-color:#121212;}"
         "QDockWidget{background-color:#1a1a1a;color:#f0f0f0;}"
         "QMenuBar, QStatusBar{background-color:#1a1a1a;color:#e0e0e0;}"));
+
+    // ---- 构建自定义标题栏，放置中心标题与撤回按钮 ----
+    buildTitleBar();
 
     buildCentral();
     buildNavDock();
@@ -53,6 +64,204 @@ CTViewer::CTViewer(QWidget* parent)
 }
 
 CTViewer::~CTViewer() = default;
+
+// ---- 构造自定义标题栏，提供撤回按钮与窗口控制按钮 ----
+void CTViewer::buildTitleBar()
+{
+    // ---- 创建标题栏主体并设置样式，保持深色主题 ----
+    titleBar_ = new QWidget(this);
+    titleBar_->setObjectName(QStringLiteral("customTitleBar"));
+    titleBar_->setFixedHeight(38);
+    titleBar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    titleBar_->setStyleSheet(QStringLiteral(
+        "QWidget#customTitleBar{background-color:#202020;}"
+        "QToolButton{background:transparent; border:none; color:#f5f5f5; padding:6px;}"
+        "QToolButton:hover{background-color:rgba(255,255,255,0.12);}"
+        "QLabel#titleLabel{color:#f5f5f5; font-size:14px; font-weight:600;}"));
+
+    auto* barLayout = new QHBoxLayout(titleBar_);
+    barLayout->setContentsMargins(10, 0, 4, 0);
+    barLayout->setSpacing(0);
+
+    // ---- 左侧区域：放置撤回按钮，并允许拖拽移动窗口 ----
+    titleLeftArea_ = new QWidget(titleBar_);
+    auto* leftLayout = new QHBoxLayout(titleLeftArea_);
+    leftLayout->setContentsMargins(0, 0, 0, 0);
+    leftLayout->setSpacing(6);
+
+    btnTitleUndo_ = new QToolButton(titleLeftArea_);
+    btnTitleUndo_->setToolTip(QStringLiteral("撤回"));
+    btnTitleUndo_->setCursor(Qt::PointingHandCursor);
+    btnTitleUndo_->setIcon(style()->standardIcon(QStyle::SP_ArrowBack));
+    btnTitleUndo_->setAutoRaise(true);
+    leftLayout->addWidget(btnTitleUndo_);
+
+    titleLeftArea_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    titleLeftArea_->installEventFilter(this);
+    barLayout->addWidget(titleLeftArea_, 0);
+
+    // ---- 中间区域：放置标题文本，保持居中显示 ----
+    titleCenterArea_ = new QWidget(titleBar_);
+    auto* centerLayout = new QHBoxLayout(titleCenterArea_);
+    centerLayout->setContentsMargins(0, 0, 0, 0);
+
+    titleLabel_ = new QLabel(windowTitle(), titleCenterArea_);
+    titleLabel_->setObjectName(QStringLiteral("titleLabel"));
+    titleLabel_->setAlignment(Qt::AlignCenter);
+    titleLabel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    centerLayout->addWidget(titleLabel_);
+
+    titleCenterArea_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    titleCenterArea_->installEventFilter(this);
+    titleLabel_->installEventFilter(this);
+    barLayout->addWidget(titleCenterArea_, 1);
+
+    // ---- 右侧区域：构建最小化、最大化和关闭按钮 ----
+    auto* rightContainer = new QWidget(titleBar_);
+    auto* rightLayout = new QHBoxLayout(rightContainer);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
+    rightLayout->setSpacing(0);
+
+    btnMinimize_ = new QToolButton(rightContainer);
+    btnMinimize_->setToolTip(QStringLiteral("最小化"));
+    btnMinimize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMinButton));
+    rightLayout->addWidget(btnMinimize_);
+
+    btnMaximize_ = new QToolButton(rightContainer);
+    btnMaximize_->setToolTip(QStringLiteral("最大化"));
+    btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
+    rightLayout->addWidget(btnMaximize_);
+
+    btnClose_ = new QToolButton(rightContainer);
+    btnClose_->setToolTip(QStringLiteral("关闭"));
+    btnClose_->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+    rightLayout->addWidget(btnClose_);
+
+    rightContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    barLayout->addWidget(rightContainer, 0);
+
+    // ---- 安装事件过滤器以便整条标题栏可拖拽 ----
+    titleBar_->installEventFilter(this);
+
+    // ---- 将标题栏挂载到窗口顶部（替换默认菜单栏区域） ----
+    setMenuWidget(titleBar_);
+
+    // ---- 连接窗口控制按钮的逻辑 ----
+    connect(btnMinimize_, &QToolButton::clicked, this, [this]() {
+        // 通过调用 showMinimized() 实现窗口最小化
+        showMinimized();
+    });
+    connect(btnMaximize_, &QToolButton::clicked, this, [this]() {
+        // 双态：当前最大化则恢复，否则执行最大化
+        if (isMaximized()) {
+            showNormal();
+        } else {
+            showMaximized();
+        }
+        updateMaximizeButtonIcon();
+    });
+    connect(btnClose_, &QToolButton::clicked, this, [this]() {
+        // 保持 close() 调用，确保行为与系统标题栏一致
+        close();
+    });
+
+    connect(btnTitleUndo_, &QToolButton::clicked, this, [this]() {
+        // 当欢迎页的撤回按钮存在时，同步触发其点击逻辑
+        if (btnUndo_) {
+            btnUndo_->click();
+        }
+    });
+
+    updateMaximizeButtonIcon();
+}
+
+// ---- 根据窗口状态刷新最大化按钮的图标与提示 ----
+void CTViewer::updateMaximizeButtonIcon()
+{
+    if (!btnMaximize_) {
+        return;
+    }
+
+    if (isMaximized()) {
+        btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarNormalButton));
+        btnMaximize_->setToolTip(QStringLiteral("还原"));
+    } else {
+        btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
+        btnMaximize_->setToolTip(QStringLiteral("最大化"));
+    }
+}
+
+// ---- 监听窗口状态与标题变化，保持自定义标题栏同步 ----
+void CTViewer::changeEvent(QEvent* event)
+{
+    QMainWindow::changeEvent(event);
+
+    if (!event) {
+        return;
+    }
+
+    if (event->type() == QEvent::WindowStateChange) {
+        updateMaximizeButtonIcon();
+    } else if (event->type() == QEvent::WindowTitleChange) {
+        if (titleLabel_) {
+            titleLabel_->setText(windowTitle());
+        }
+    }
+}
+
+// ---- 处理标题栏的鼠标事件，实现拖动与双击切换窗口状态 ----
+bool CTViewer::eventFilter(QObject* watched, QEvent* event)
+{
+    if (!event) {
+        return QMainWindow::eventFilter(watched, event);
+    }
+
+    const bool titleArea = (watched == titleBar_.data() || watched == titleLeftArea_.data() || watched == titleCenterArea_.data() || watched == titleLabel_.data());
+    if (titleArea) {
+        switch (event->type()) {
+        case QEvent::MouseButtonPress: {
+            auto* mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                draggingWindow_ = true;
+                dragOffset_ = mouseEvent->globalPos() - frameGeometry().topLeft();
+                return true;
+            }
+            break;
+        }
+        case QEvent::MouseMove: {
+            if (draggingWindow_) {
+                auto* mouseEvent = static_cast<QMouseEvent*>(event);
+                move(mouseEvent->globalPos() - dragOffset_);
+                return true;
+            }
+            break;
+        }
+        case QEvent::MouseButtonRelease: {
+            auto* mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                draggingWindow_ = false;
+                return true;
+            }
+            break;
+        }
+        case QEvent::MouseButtonDblClick: {
+            // 双击标题栏切换最大化状态
+            draggingWindow_ = false;
+            if (isMaximized()) {
+                showNormal();
+            } else {
+                showMaximized();
+            }
+            updateMaximizeButtonIcon();
+            return true;
+        }
+        default:
+            break;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
+}
 
 // ------------------ 构造 ------------------
 

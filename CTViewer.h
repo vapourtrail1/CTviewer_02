@@ -1,6 +1,9 @@
 #pragma once
 #include <QMainWindow>
 #include <QPointer>
+#include <QPoint>
+
+class QToolButton;
 
 class QListWidget;
 class QListWidgetItem;
@@ -8,6 +11,7 @@ class QStackedWidget;
 class QWidget;
 class QLabel;
 class QPushButton;
+class QEvent;
 class QSlider;
 class QDoubleSpinBox;
 class QSpinBox;
@@ -32,7 +36,20 @@ public:
     ~CTViewer();
 
 private:
-    // 
+    // ---- 自定义标题栏 ----
+    QPointer<QWidget> titleBar_;
+    QPointer<QWidget> titleLeftArea_;
+    QPointer<QWidget> titleCenterArea_;
+    QPointer<QLabel> titleLabel_;
+    QPointer<QToolButton> btnTitleUndo_;
+    QPointer<QToolButton> btnMinimize_;
+    QPointer<QToolButton> btnMaximize_;
+    QPointer<QToolButton> btnClose_;
+    bool draggingWindow_ = false;
+    QPoint dragOffset_;
+
+private:
+    //
     QPointer<QStackedWidget> stack_;
     // ӭҳ
     QPointer<QWidget> pageWelcome_;
@@ -75,6 +92,16 @@ private:
     QPointer<QComboBox> cbInterp_;
     QPointer<QComboBox> cbPreset_;
     QPointer<QPushButton> btnReset_;
+
+private:
+    // ӽ
+    void buildTitleBar();
+    void updateMaximizeButtonIcon();
+
+protected:
+    // ---- 事件处理：维护标题栏拖拽、双击等行为 ----
+    bool eventFilter(QObject* watched, QEvent* event) override;
+    void changeEvent(QEvent* event) override;
 
 private:
     // ӽ
