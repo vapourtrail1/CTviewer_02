@@ -12,10 +12,12 @@ class QSlider;
 class QDoubleSpinBox;
 class QSpinBox;
 class QComboBox;
+class QFrame;
+class QTableWidget;
 class QDockWidget;
 class QFormLayout;
 
-// ---- Èç¹ûÅäºÃ VTK£¬°ÑÏÂÃæ¿ª¹Ø¸Ä³É 1 ²¢È·ÈÏ include Â·¾¶ÕıÈ· ----
+// ----  VTKæ¿ªØ¸Ä³ 1 È· include Â·È· ----
 #define USE_VTK 0
 
 #if USE_VTK
@@ -30,15 +32,21 @@ public:
     ~CTViewer();
 
 private:
-    // ÖĞÑëÇø
+    // 
     QPointer<QStackedWidget> stack_;
-    // »¶Ó­Ò³
+    // Ó­Ò³
     QPointer<QWidget> pageWelcome_;
     QPointer<QPushButton> btnVisCheck_;
     QPointer<QPushButton> btnPorosity_;
     QPointer<QPushButton> btnMetrology_;
     QPointer<QPushButton> btnMaterial_;
-    // ÈıÕı½»Ò³
+    // æ¬¢è¿é¡µé¡¶éƒ¨ã€Œå¿«é€Ÿå¼€å§‹ã€æŒ‰é’®
+    QPointer<QPushButton> btnOpenFile_;
+    QPointer<QPushButton> btnCreateProject_;
+    QPointer<QPushButton> btnLoadDemo_;
+    // æœ€è¿‘é¡¹ç›®è¡¨æ ¼
+    QPointer<QTableWidget> tableRecent_;
+    // Ò³
     QPointer<QWidget> pageSlices_;
 #if USE_VTK
     QPointer<QVTKOpenGLNativeWidget> viewAxial_;
@@ -50,12 +58,12 @@ private:
     QPointer<QWidget> viewCoronal_;
 #endif
 
-    // ×óÓÒ Dock
+    //  Dock
     QPointer<QDockWidget> dockNav_;
     QPointer<QListWidget> listNav_;
     QPointer<QDockWidget> dockProp_;
 
-    // äÖÈ¾µ÷Õû¿Ø¼ş
+    // È¾Ø¼
     QPointer<QSlider> sliderWW_;
     QPointer<QDoubleSpinBox> dsbWW_;
     QPointer<QSlider> sliderWL_;
@@ -66,7 +74,7 @@ private:
     QPointer<QPushButton> btnReset_;
 
 private:
-    // ¹¹Ôì×Ó½çÃæ
+    // Ó½
     void buildCentral();
     void buildWelcomePage();
     void buildSlicesPage();
@@ -76,6 +84,6 @@ private:
     void setDefaults();
 
 #if USE_VTK
-    void setupVTKViews(); // ¸øÈıÊÓÍ¼¹Ò×îĞ¡¹ÜÏß£¨ºÚµ×£©
+    void setupVTKViews(); // Í¼Ğ¡ß£Úµ×£
 #endif
 };
