@@ -1,4 +1,4 @@
-﻿#include "CTViewer.h"
+#include "CTViewer.h"
 #include <QApplication>
 #include <QDockWidget>
 #include <QListWidget>
@@ -15,6 +15,11 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QStatusBar>
+#include <QFrame>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QHeaderView>
+#include <QAbstractItemView>
 
 #if USE_VTK
 #include <QVTKOpenGLNativeWidget.h>
@@ -27,6 +32,12 @@ CTViewer::CTViewer(QWidget* parent)
 {
     setWindowTitle(QStringLiteral("VGStudio-Lite"));
     resize(1280, 820);
+
+    // 应用简易的深色调色板，让整体观感更贴近截图中的产品风格。
+    setStyleSheet(QStringLiteral(
+        "QMainWindow{background-color:#121212;}"
+        "QDockWidget{background-color:#1a1a1a;color:#f0f0f0;}"
+        "QMenuBar, QStatusBar{background-color:#1a1a1a;color:#e0e0e0;}"));
 
     buildCentral();
     buildNavDock();
@@ -63,38 +74,182 @@ void CTViewer::buildCentral()
 void CTViewer::buildWelcomePage()
 {
     pageWelcome_ = new QWidget(stack_);
+    pageWelcome_->setObjectName(QStringLiteral("pageWelcome"));
+
+    // 通过统一的样式表设置欢迎页背景以及文字颜色，打造与示例界面类似的深色风格。
+    pageWelcome_->setStyleSheet(QStringLiteral(
+        "QWidget#pageWelcome{background-color:#181818;}"
+        "QLabel{color:#f2f2f2;}"));
 
     auto vl = new QVBoxLayout(pageWelcome_);
     vl->setContentsMargins(18, 18, 18, 18);
     vl->setSpacing(16);
 
-    auto lbl = new QLabel(QStringLiteral("欢迎使用Viewer_demo"), pageWelcome_);
-    lbl->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    lbl->setStyleSheet("font-size:20px; font-weight:600;");
-    vl->addWidget(lbl);
+    // 顶部横幅，显示产品名称与版本信息。
+    auto banner = new QFrame(pageWelcome_);
+    banner->setObjectName(QStringLiteral("heroBanner"));
+    banner->setStyleSheet(QStringLiteral(
+        "QFrame#heroBanner{background:#262626; border-radius:10px;}"
+        "QFrame#heroBanner QLabel{color:#f9f9f9;}"));
+    auto bannerLayout = new QVBoxLayout(banner);
+    bannerLayout->setContentsMargins(20, 16, 20, 16);
+    bannerLayout->setSpacing(8);
+    auto title = new QLabel(QStringLiteral("欢迎使用 VGSTUDIO MAX 2024.4 64 bit"), banner);
+    title->setStyleSheet(QStringLiteral("font-size:24px; font-weight:700;"));
+    bannerLayout->addWidget(title);
+    auto subtitle = new QLabel(QStringLiteral("继续最近项目，或通过下方模块快速开始您的工业 CT 工作流程。"), banner);
+    subtitle->setStyleSheet(QStringLiteral("font-size:14px; color:#bbbbbb;"));
+    subtitle->setWordWrap(true);
+    bannerLayout->addWidget(subtitle);
+    vl->addWidget(banner);
 
-    // 四个大按钮
+    // 快速开始与提示区域，采用左右布局提升信息密度。
+    auto quickRow = new QHBoxLayout();
+    quickRow->setSpacing(16);
+
+    auto quickFrame = new QFrame(pageWelcome_);
+    quickFrame->setObjectName(QStringLiteral("quickActions"));
+    quickFrame->setStyleSheet(QStringLiteral(
+        "QFrame#quickActions{background:#202020; border-radius:10px;}"
+        "QFrame#quickActions QLabel{color:#f5f5f5;}"
+        "QFrame#quickActions QPushButton{background:#2f2f2f; color:#f5f5f5; border:1px solid #3c3c3c;"
+        " border-radius:6px; padding:10px 16px; font-size:15px;}"
+        "QFrame#quickActions QPushButton:hover{background:#3a3a3a; border-color:#4d6fff;}"));
+    auto quickLayout = new QVBoxLayout(quickFrame);
+    quickLayout->setContentsMargins(20, 18, 20, 18);
+    quickLayout->setSpacing(12);
+    auto quickTitle = new QLabel(QStringLiteral("快速开始"), quickFrame);
+    quickTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
+    quickLayout->addWidget(quickTitle);
+
+    // 三个快捷按钮，分别对应打开、创建和加载示例工程。
+    btnOpenFile_ = new QPushButton(QStringLiteral("打开数据集"), quickFrame);
+    btnOpenFile_->setCursor(Qt::PointingHandCursor);
+    quickLayout->addWidget(btnOpenFile_);
+
+    btnCreateProject_ = new QPushButton(QStringLiteral("新建重建项目"), quickFrame);
+    btnCreateProject_->setCursor(Qt::PointingHandCursor);
+    quickLayout->addWidget(btnCreateProject_);
+
+    btnLoadDemo_ = new QPushButton(QStringLiteral("加载示例数据"), quickFrame);
+    btnLoadDemo_->setCursor(Qt::PointingHandCursor);
+    quickLayout->addWidget(btnLoadDemo_);
+
+    quickLayout->addStretch();
+
+    quickRow->addWidget(quickFrame, 2);
+
+    auto tipsFrame = new QFrame(pageWelcome_);
+    tipsFrame->setObjectName(QStringLiteral("tipsFrame"));
+    tipsFrame->setStyleSheet(QStringLiteral(
+        "QFrame#tipsFrame{background:#202020; border-radius:10px;}"
+        "QFrame#tipsFrame QLabel{color:#d8d8d8;}"));
+    auto tipsLayout = new QVBoxLayout(tipsFrame);
+    tipsLayout->setContentsMargins(20, 18, 20, 18);
+    tipsLayout->setSpacing(10);
+    auto tipsTitle = new QLabel(QStringLiteral("操作提示"), tipsFrame);
+    tipsTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
+    tipsLayout->addWidget(tipsTitle);
+    auto tips = new QLabel(QStringLiteral("• 支持加载 VGProject (*.vgl) 与 VGArchive (*.vgi) 项目。\n"
+        "• 可直接导入 DICOM、TIFF、RAW 等常见工业 CT 数据。\n"
+        "• 若需培训资料，可访问帮助中心以获取最新教程。"), tipsFrame);
+    tips->setWordWrap(true);
+    tips->setStyleSheet(QStringLiteral("font-size:13px; line-height:20px;"));
+    tipsLayout->addWidget(tips);
+    tipsLayout->addStretch();
+
+    quickRow->addWidget(tipsFrame, 3);
+
+    vl->addLayout(quickRow);
+
+    // 模块入口按钮，使用网格布局保持紧凑。
+    auto moduleFrame = new QFrame(pageWelcome_);
+    moduleFrame->setObjectName(QStringLiteral("moduleFrame"));
+    moduleFrame->setStyleSheet(QStringLiteral(
+        "QFrame#moduleFrame{background:#202020; border-radius:10px;}"
+        "QFrame#moduleFrame QPushButton{background:#262626; border-radius:8px; border:1px solid #333;"
+        " color:#f5f5f5; font-size:16px; padding:18px 12px;}"
+        "QFrame#moduleFrame QPushButton:hover{background:#313131; border-color:#4d6fff;}"
+        "QFrame#moduleFrame QLabel{color:#f5f5f5;}"));
+    auto moduleLayout = new QVBoxLayout(moduleFrame);
+    moduleLayout->setContentsMargins(20, 18, 20, 18);
+    moduleLayout->setSpacing(12);
+    auto moduleTitle = new QLabel(QStringLiteral("核心模块"), moduleFrame);
+    moduleTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
+    moduleLayout->addWidget(moduleTitle);
+
     auto grid = new QGridLayout();
     grid->setHorizontalSpacing(16);
     grid->setVerticalSpacing(16);
-    btnVisCheck_ = new QPushButton(QStringLiteral("视觉检查"));
-    btnPorosity_ = new QPushButton(QStringLiteral("孔隙度"));
-    btnMetrology_ = new QPushButton(QStringLiteral("计量"));
-    btnMaterial_ = new QPushButton(QStringLiteral("材料"));
+    btnVisCheck_ = new QPushButton(QStringLiteral("视觉检查"), moduleFrame);
+    btnPorosity_ = new QPushButton(QStringLiteral("孔隙度"), moduleFrame);
+    btnMetrology_ = new QPushButton(QStringLiteral("计量"), moduleFrame);
+    btnMaterial_ = new QPushButton(QStringLiteral("材料"), moduleFrame);
     for (auto* b : { btnVisCheck_.data(), btnPorosity_.data(), btnMetrology_.data(), btnMaterial_.data() }) {
-        b->setMinimumSize(160, 60);
-        b->setStyleSheet("font-size:16px; padding:12px;");
+        b->setMinimumSize(160, 70);
     }
     grid->addWidget(btnVisCheck_, 0, 0);
     grid->addWidget(btnPorosity_, 0, 1);
     grid->addWidget(btnMetrology_, 0, 2);
     grid->addWidget(btnMaterial_, 0, 3);
-    vl->addLayout(grid);
+    moduleLayout->addLayout(grid);
 
-    auto hint = new QLabel(QStringLiteral("选择模块或左侧导航以开始"), pageWelcome_);
-    hint->setAlignment(Qt::AlignHCenter);
-    hint->setStyleSheet("color:#888;");
-    vl->addWidget(hint);
+    vl->addWidget(moduleFrame);
+
+    // 最近项目列表，使用 QTableWidget 填充示例数据，模拟真实历史记录。
+    auto recentFrame = new QFrame(pageWelcome_);
+    recentFrame->setObjectName(QStringLiteral("recentFrame"));
+    recentFrame->setStyleSheet(QStringLiteral(
+        "QFrame#recentFrame{background:#202020; border-radius:10px;}"
+        "QFrame#recentFrame QLabel{color:#f5f5f5;}"
+        "QFrame#recentFrame QHeaderView::section{background:#2c2c2c; color:#f0f0f0; border:0;}"
+        "QFrame#recentFrame QTableWidget{background:transparent; border:0; color:#f5f5f5;}"
+        "QFrame#recentFrame QTableWidget::item:selected{background-color:#3d65f5;}"));
+    auto recentLayout = new QVBoxLayout(recentFrame);
+    recentLayout->setContentsMargins(20, 18, 20, 18);
+    recentLayout->setSpacing(12);
+    auto recentTitle = new QLabel(QStringLiteral("最近项目"), recentFrame);
+    recentTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
+    recentLayout->addWidget(recentTitle);
+
+    tableRecent_ = new QTableWidget(0, 3, recentFrame);
+    tableRecent_->setHorizontalHeaderLabels({ QStringLiteral("名称"), QStringLiteral("位置"), QStringLiteral("上次打开") });
+    tableRecent_->horizontalHeader()->setStretchLastSection(true);
+    tableRecent_->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    tableRecent_->verticalHeader()->setVisible(false);
+    tableRecent_->setShowGrid(false);
+    tableRecent_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableRecent_->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableRecent_->setAlternatingRowColors(true);
+    tableRecent_->setStyleSheet(QStringLiteral(
+        "QTableWidget{alternate-background-color:#1f1f1f;}"
+        "QTableWidget QTableCornerButton::section{background:#2c2c2c;}"));
+
+    struct RecentItem
+    {
+        QString name;
+        QString path;
+        QString time;
+    };
+    const QList<RecentItem> recents = {
+        { QStringLiteral("发动机缸体.vgl"), QStringLiteral("D:/Projects/CT/EngineBlock"), QStringLiteral("今天 09:24") },
+        { QStringLiteral("齿轮箱.vgl"), QStringLiteral("D:/Projects/CT/GearBox"), QStringLiteral("昨天 17:42") },
+        { QStringLiteral("叶片扫描.vgi"), QStringLiteral("E:/Scan/Blade"), QStringLiteral("2024-05-12") },
+        { QStringLiteral("材料试样.raw"), QStringLiteral("E:/Lab/Materials"), QStringLiteral("2024-04-28") }
+    };
+    for (const auto& item : recents) {
+        const int row = tableRecent_->rowCount();
+        tableRecent_->insertRow(row);
+        tableRecent_->setItem(row, 0, new QTableWidgetItem(item.name));
+        tableRecent_->setItem(row, 1, new QTableWidgetItem(item.path));
+        tableRecent_->setItem(row, 2, new QTableWidgetItem(item.time));
+    }
+    tableRecent_->setMinimumHeight(220);
+    recentLayout->addWidget(tableRecent_);
+
+    vl->addWidget(recentFrame);
+
+    vl->addStretch();
 
     stack_->addWidget(pageWelcome_);
 }
@@ -225,6 +380,24 @@ void CTViewer::wireSignals()
             }
         });
 
+    // 欢迎页上的快捷按钮，统一跳转到切片浏览页并给出状态栏提示。
+    const auto goToSlices = [this](const QString& message) {
+        stack_->setCurrentWidget(pageSlices_);
+        statusBar()->showMessage(message, 1500);
+    };
+    connect(btnOpenFile_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("打开数据集")); });
+    connect(btnCreateProject_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("创建新的重建项目")); });
+    connect(btnLoadDemo_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("加载示例数据")); });
+    connect(btnVisCheck_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入视觉检查模块")); });
+    connect(btnPorosity_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入孔隙度分析模块")); });
+    connect(btnMetrology_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入计量模块")); });
+    connect(btnMaterial_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入材料分析模块")); });
+    connect(tableRecent_, &QTableWidget::itemDoubleClicked, this,
+        [goToSlices](QTableWidgetItem* item) {
+            const QString projectName = item ? item->text() : QStringLiteral("项目");
+            goToSlices(QStringLiteral("正在打开 %1 ...").arg(projectName));
+        });
+
     // WW/WL 双向联动（UI 级）
     connect(sliderWW_, &QSlider::valueChanged, dsbWW_, &QDoubleSpinBox::setValue);
     connect(sliderWL_, &QSlider::valueChanged, dsbWL_, &QDoubleSpinBox::setValue);
@@ -256,6 +429,11 @@ void CTViewer::setDefaults()
     sbSlab_->setValue(1);
     cbInterp_->setCurrentText(QStringLiteral("Linear"));
     cbPreset_->setCurrentText(QStringLiteral("Bone"));
+
+    // 欢迎页为默认显示，确保导航列表同步选中第一个条目。
+    if (listNav_) {
+        listNav_->setCurrentRow(0);
+    }
 }
 
 #if USE_VTK
