@@ -25,7 +25,6 @@
 #include <QStyle>
 #include <QMouseEvent>
 #include <QEvent>
-
 #if USE_VTK
 #include <QVTKOpenGLNativeWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -37,11 +36,10 @@ CTViewer::CTViewer(QWidget* parent)
 {
     // ---- 启用自定义无边框窗口，以便自行绘制标题栏 ----
     setWindowFlag(Qt::FramelessWindowHint);
+    setWindowTitle(QStringLiteral("CTviewer_demo"));
 
-    setWindowTitle(QStringLiteral("VGStudio-Lite"));
-    resize(1280, 820);
 
-    // 应用简易的深色调色板，让整体观感更贴近截图中的产品风格。
+    //颜色
     setStyleSheet(QStringLiteral(
         "QMainWindow{background-color:#121212;}"
         "QDockWidget{background-color:#1a1a1a;color:#f0f0f0;}"
@@ -49,7 +47,6 @@ CTViewer::CTViewer(QWidget* parent)
 
     // ---- 构建自定义标题栏，放置中心标题与撤回按钮 ----
     buildTitleBar();
-
     buildCentral();
     buildNavDock();
     buildPropDock();
@@ -65,7 +62,7 @@ CTViewer::CTViewer(QWidget* parent)
 
 CTViewer::~CTViewer() = default;
 
-// ---- 构造自定义标题栏，提供撤回按钮与窗口控制按钮 ----
+
 void CTViewer::buildTitleBar()
 {
     // ---- 创建标题栏主体并设置样式，保持深色主题 ----
@@ -83,18 +80,25 @@ void CTViewer::buildTitleBar()
     barLayout->setContentsMargins(10, 0, 4, 0);
     barLayout->setSpacing(0);
 
-    // ---- 左侧区域：放置撤回按钮，并允许拖拽移动窗口 ----
-    titleLeftArea_ = new QWidget(titleBar_);
-    auto* leftLayout = new QHBoxLayout(titleLeftArea_);
-    leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(6);
+    // ---- 左侧区域：放置撤回和按钮，并允许拖拽移动窗口 ----
+    titleLeftArea_ = new QWidget(titleBar_);//这句话的意思是创建一个新的 QWidget 对象，并将其父对象设置为 titleBar_，这样 titleLeftArea_ 就成为 titleBar_ 的子部件
+    auto* leftLayout = new QHBoxLayout(titleLeftArea_);//这句话的意思是创建一个水平布局管理器，并将其设置为 titleLeftArea_ 小部件的布局管理器
+    leftLayout->setContentsMargins(0, 0, 0, 0);//这句话的意思是将布局管理器的边距设置为0，这样布局中的小部件就会紧贴着布局的边缘，没有额外的空白区域
+    leftLayout->setSpacing(6);//这句话的意思是将布局管理器中小部件之间的间距设置为6像素，这样布局中的小部件之间会有一定的空隙，而不是紧挨在一起
 
-    btnTitleUndo_ = new QToolButton(titleLeftArea_);
+    btnTitleUndo_ = new QToolButton(titleLeftArea_);//这句话的意思是创建一个新的 QToolButton 对象，并将其父对象设置为 titleLeftArea_，这样 btnTitleUndo_ 就成为 titleLeftArea_ 的子部件
     btnTitleUndo_->setToolTip(QStringLiteral("撤回"));
     btnTitleUndo_->setCursor(Qt::PointingHandCursor);
     btnTitleUndo_->setIcon(style()->standardIcon(QStyle::SP_ArrowBack));
     btnTitleUndo_->setAutoRaise(true);
     leftLayout->addWidget(btnTitleUndo_);
+
+    btnTitleUndo02_ = new QToolButton(titleLeftArea_);
+    btnTitleUndo02_->setToolTip(QStringLiteral("前进"));
+    btnTitleUndo02_->setCursor(Qt::PointingHandCursor);
+    btnTitleUndo02_->setIcon(style()->standardIcon(QStyle::SP_ArrowForward));
+    btnTitleUndo02_->setAutoRaise(true);
+    leftLayout->addWidget(btnTitleUndo02_);
 
     titleLeftArea_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
     titleLeftArea_->installEventFilter(this);
@@ -125,16 +129,43 @@ void CTViewer::buildTitleBar()
     btnMinimize_ = new QToolButton(rightContainer);
     btnMinimize_->setToolTip(QStringLiteral("最小化"));
     btnMinimize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMinButton));
+    btnMinimize_->setStyleSheet(
+        "QToolButton {"
+        "  color: white;"              // 图标/文字颜色
+        "  border-radius: 4px;"        // 圆角
+        "}"
+        "QToolButton:hover {"
+        "  background-color: #6EAD3E;" // 悬停时颜色
+        "}"
+    );
     rightLayout->addWidget(btnMinimize_);
 
     btnMaximize_ = new QToolButton(rightContainer);
     btnMaximize_->setToolTip(QStringLiteral("最大化"));
     btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
+    btnMaximize_->setStyleSheet(
+        "QToolButton {"
+        "  color: white;"              // 图标/文字颜色
+        "  border-radius: 4px;"        // 圆角
+        "}"
+        "QToolButton:hover {"
+        "  background-color: #6EAD3E;" // 悬停时颜色
+        "}"
+    );
     rightLayout->addWidget(btnMaximize_);
 
     btnClose_ = new QToolButton(rightContainer);
     btnClose_->setToolTip(QStringLiteral("关闭"));
     btnClose_->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
+    btnClose_->setStyleSheet(
+        "QToolButton {"
+        "  color: white;"              // 图标/文字颜色
+        "  border-radius: 4px;"        // 圆角
+        "}"
+        "QToolButton:hover {"
+        "  background-color: #6EAD3E;" // 悬停时颜色
+        "}"
+    );
     rightLayout->addWidget(btnClose_);
 
     rightContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
@@ -150,27 +181,28 @@ void CTViewer::buildTitleBar()
     connect(btnMinimize_, &QToolButton::clicked, this, [this]() {
         // 通过调用 showMinimized() 实现窗口最小化
         showMinimized();
-    });
+        });
     connect(btnMaximize_, &QToolButton::clicked, this, [this]() {
         // 双态：当前最大化则恢复，否则执行最大化
         if (isMaximized()) {
             showNormal();
-        } else {
+        }
+        else {
             showMaximized();
         }
         updateMaximizeButtonIcon();
-    });
+        });
     connect(btnClose_, &QToolButton::clicked, this, [this]() {
         // 保持 close() 调用，确保行为与系统标题栏一致
         close();
-    });
+        });
 
     connect(btnTitleUndo_, &QToolButton::clicked, this, [this]() {
         // 当欢迎页的撤回按钮存在时，同步触发其点击逻辑
         if (btnUndo_) {
             btnUndo_->click();
         }
-    });
+        });
 
     updateMaximizeButtonIcon();
 }
@@ -185,7 +217,8 @@ void CTViewer::updateMaximizeButtonIcon()
     if (isMaximized()) {
         btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarNormalButton));
         btnMaximize_->setToolTip(QStringLiteral("还原"));
-    } else {
+    }
+    else {
         btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarMaxButton));
         btnMaximize_->setToolTip(QStringLiteral("最大化"));
     }
@@ -202,7 +235,8 @@ void CTViewer::changeEvent(QEvent* event)
 
     if (event->type() == QEvent::WindowStateChange) {
         updateMaximizeButtonIcon();
-    } else if (event->type() == QEvent::WindowTitleChange) {
+    }
+    else if (event->type() == QEvent::WindowTitleChange) {
         if (titleLabel_) {
             titleLabel_->setText(windowTitle());
         }
@@ -249,7 +283,8 @@ bool CTViewer::eventFilter(QObject* watched, QEvent* event)
             draggingWindow_ = false;
             if (isMaximized()) {
                 showNormal();
-            } else {
+            }
+            else {
                 showMaximized();
             }
             updateMaximizeButtonIcon();
@@ -294,36 +329,6 @@ void CTViewer::buildWelcomePage()
     vl->setContentsMargins(18, 18, 18, 18);
     vl->setSpacing(16);
 
-    // 顶部操作条：设置黑色背景并在中间显示产品名称，同时加入两个操作按钮。
-    auto topBar = new QFrame(pageWelcome_);
-    topBar->setObjectName(QStringLiteral("topBar"));
-    topBar->setStyleSheet(QStringLiteral(
-        "QFrame#topBar{background:#202020; border-radius:10px;}"
-        "QFrame#topBar QLabel{color:#f5f5f5; font-size:16px; font-weight:600;}"
-        "QFrame#topBar QPushButton{background:#2f2f2f; color:#f5f5f5; border:1px solid #3c3c3c;"
-        " border-radius:6px; padding:8px 18px;}"
-        "QFrame#topBar QPushButton:hover{background:#3a3a3a; border-color:#4d6fff;}"));
-    auto topLayout = new QHBoxLayout(topBar);
-    topLayout->setContentsMargins(20, 10, 20, 10);
-    topLayout->setSpacing(12);
-
-    btnUndo_ = new QPushButton(QStringLiteral("撤回"), topBar);
-    btnUndo_->setCursor(Qt::PointingHandCursor);
-    topLayout->addWidget(btnUndo_);
-
-    topLayout->addStretch();
-
-    auto productLabel = new QLabel(QStringLiteral("VGStudio-Lite"), topBar);
-    productLabel->setAlignment(Qt::AlignCenter);
-    topLayout->addWidget(productLabel);
-
-    topLayout->addStretch();
-
-    btnKeep_ = new QPushButton(QStringLiteral("不撤回"), topBar);
-    btnKeep_->setCursor(Qt::PointingHandCursor);
-    topLayout->addWidget(btnKeep_);
-
-    vl->addWidget(topBar);
 
     // 顶部横幅，显示产品名称与版本信息。
     auto banner = new QFrame(pageWelcome_);
@@ -334,7 +339,7 @@ void CTViewer::buildWelcomePage()
     auto bannerLayout = new QVBoxLayout(banner);
     bannerLayout->setContentsMargins(20, 16, 20, 16);
     bannerLayout->setSpacing(8);
-    auto title = new QLabel(QStringLiteral("欢迎使用 VGSTUDIO MAX 2024.4 64 bit"), banner);
+    auto title = new QLabel(QStringLiteral("欢迎使用 CTviewer_demo"), banner);
     title->setStyleSheet(QStringLiteral("font-size:24px; font-weight:700;"));
     bannerLayout->addWidget(title);
     auto subtitle = new QLabel(QStringLiteral("继续最近项目，或通过下方模块快速开始您的工业 CT 工作流程。"), banner);
@@ -390,9 +395,8 @@ void CTViewer::buildWelcomePage()
     auto tipsTitle = new QLabel(QStringLiteral("操作提示"), tipsFrame);
     tipsTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
     tipsLayout->addWidget(tipsTitle);
-    auto tips = new QLabel(QStringLiteral("• 支持加载 VGProject (*.vgl) 与 VGArchive (*.vgi) 项目。\n"
-        "• 可直接导入 DICOM、TIFF、RAW 等常见工业 CT 数据。\n"
-        "• 若需培训资料，可访问帮助中心以获取最新教程。"), tipsFrame);
+    auto tips = new QLabel(QStringLiteral("1.可直接导入 DICOM、TIFF、RAW 等常见工业 CT 数据。\n"
+        "2.若需培训资料，可访问帮助中心以获取最新教程。"), tipsFrame);
     tips->setWordWrap(true);
     tips->setStyleSheet(QStringLiteral("font-size:13px; line-height:20px;"));
     tipsLayout->addWidget(tips);
@@ -624,7 +628,7 @@ void CTViewer::wireSignals()
     const auto goToSlices = [this](const QString& message) {
         stack_->setCurrentWidget(pageSlices_);
         statusBar()->showMessage(message, 1500);
-    };
+        };
     connect(btnOpenFile_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("打开数据集")); });
     connect(btnCreateProject_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("创建新的重建项目")); });
     connect(btnLoadDemo_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("加载示例数据")); });

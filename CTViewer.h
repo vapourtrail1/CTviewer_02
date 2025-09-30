@@ -4,7 +4,6 @@
 #include <QPoint>
 
 class QToolButton;
-
 class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
@@ -21,7 +20,7 @@ class QTableWidget;
 class QDockWidget;
 class QFormLayout;
 
-// ----  VTK濪ظĳ 1 ȷ include ·ȷ ----
+
 #define USE_VTK 0
 
 #if USE_VTK
@@ -42,6 +41,7 @@ private:
     QPointer<QWidget> titleCenterArea_;
     QPointer<QLabel> titleLabel_;
     QPointer<QToolButton> btnTitleUndo_;
+    QPointer<QToolButton> btnTitleUndo02_;
     QPointer<QToolButton> btnMinimize_;
     QPointer<QToolButton> btnMaximize_;
     QPointer<QToolButton> btnClose_;
@@ -51,7 +51,7 @@ private:
 private:
     //
     QPointer<QStackedWidget> stack_;
-    // ӭҳ
+   
     QPointer<QWidget> pageWelcome_;
     QPointer<QPushButton> btnVisCheck_;
     QPointer<QPushButton> btnPorosity_;
@@ -78,12 +78,12 @@ private:
     QPointer<QWidget> viewCoronal_;
 #endif
 
-    //  Dock
+    
     QPointer<QDockWidget> dockNav_;
     QPointer<QListWidget> listNav_;
     QPointer<QDockWidget> dockProp_;
 
-    // Ⱦؼ
+    
     QPointer<QSlider> sliderWW_;
     QPointer<QDoubleSpinBox> dsbWW_;
     QPointer<QSlider> sliderWL_;
@@ -94,7 +94,7 @@ private:
     QPointer<QPushButton> btnReset_;
 
 private:
-    // ӽ
+    
     void buildTitleBar();
     void updateMaximizeButtonIcon();
 
@@ -104,7 +104,7 @@ protected:
     void changeEvent(QEvent* event) override;
 
 private:
-    // ӽ
+    
     void buildCentral();
     void buildWelcomePage();
     void buildSlicesPage();
@@ -114,6 +114,6 @@ private:
     void setDefaults();
 
 #if USE_VTK
-    void setupVTKViews(); // ͼСߣڵף
+    void setupVTKViews(); 
 #endif
 };
