@@ -11,14 +11,9 @@ class QWidget;
 class QLabel;
 class QPushButton;
 class QEvent;
-class QSlider;
-class QDoubleSpinBox;
-class QSpinBox;
-class QComboBox;
 class QFrame;
 class QTableWidget;
 class QDockWidget;
-class QFormLayout;
 
 
 #define USE_VTK 0
@@ -57,10 +52,6 @@ private:
     QPointer<QPushButton> btnPorosity_;
     QPointer<QPushButton> btnMetrology_;
     QPointer<QPushButton> btnMaterial_;
-    // 欢迎页顶部「快速开始」按钮
-    QPointer<QPushButton> btnOpenFile_;
-    QPointer<QPushButton> btnCreateProject_;
-    QPointer<QPushButton> btnLoadDemo_;
     // 欢迎页顶栏的「撤回 / 不撤回」按钮
     QPointer<QPushButton> btnUndo_;
     QPointer<QPushButton> btnKeep_;
@@ -81,17 +72,6 @@ private:
     
     QPointer<QDockWidget> dockNav_;
     QPointer<QListWidget> listNav_;
-    QPointer<QDockWidget> dockProp_;
-
-    
-    QPointer<QSlider> sliderWW_;
-    QPointer<QDoubleSpinBox> dsbWW_;
-    QPointer<QSlider> sliderWL_;
-    QPointer<QDoubleSpinBox> dsbWL_;
-    QPointer<QSpinBox> sbSlab_;
-    QPointer<QComboBox> cbInterp_;
-    QPointer<QComboBox> cbPreset_;
-    QPointer<QPushButton> btnReset_;
 
 private:
     
@@ -109,7 +89,6 @@ private:
     void buildWelcomePage();
     void buildSlicesPage();
     void buildNavDock();
-    void buildPropDock();
     void wireSignals();
     void setDefaults();
 
