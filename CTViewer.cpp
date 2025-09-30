@@ -11,11 +11,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
-#include <QFormLayout>
-#include <QSlider>
-#include <QDoubleSpinBox>
-#include <QSpinBox>
-#include <QComboBox>
 #include <QStatusBar>
 #include <QFrame>
 #include <QTableWidget>
@@ -49,7 +44,6 @@ CTViewer::CTViewer(QWidget* parent)
     buildTitleBar();
     buildCentral();
     buildNavDock();
-    buildPropDock();
     wireSignals();
     setDefaults();
 
@@ -348,42 +342,7 @@ void CTViewer::buildWelcomePage()
     bannerLayout->addWidget(subtitle);
     vl->addWidget(banner);
 
-    // 快速开始与提示区域，采用左右布局提升信息密度。
-    auto quickRow = new QHBoxLayout();
-    quickRow->setSpacing(16);
-
-    auto quickFrame = new QFrame(pageWelcome_);
-    quickFrame->setObjectName(QStringLiteral("quickActions"));
-    quickFrame->setStyleSheet(QStringLiteral(
-        "QFrame#quickActions{background:#202020; border-radius:10px;}"
-        "QFrame#quickActions QLabel{color:#f5f5f5;}"
-        "QFrame#quickActions QPushButton{background:#2f2f2f; color:#f5f5f5; border:1px solid #3c3c3c;"
-        " border-radius:6px; padding:10px 16px; font-size:15px;}"
-        "QFrame#quickActions QPushButton:hover{background:#3a3a3a; border-color:#4d6fff;}"));
-    auto quickLayout = new QVBoxLayout(quickFrame);
-    quickLayout->setContentsMargins(20, 18, 20, 18);
-    quickLayout->setSpacing(12);
-    auto quickTitle = new QLabel(QStringLiteral("快速开始"), quickFrame);
-    quickTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
-    quickLayout->addWidget(quickTitle);
-
-    // 三个快捷按钮，分别对应打开、创建和加载示例工程。
-    btnOpenFile_ = new QPushButton(QStringLiteral("打开数据集"), quickFrame);
-    btnOpenFile_->setCursor(Qt::PointingHandCursor);
-    quickLayout->addWidget(btnOpenFile_);
-
-    btnCreateProject_ = new QPushButton(QStringLiteral("新建重建项目"), quickFrame);
-    btnCreateProject_->setCursor(Qt::PointingHandCursor);
-    quickLayout->addWidget(btnCreateProject_);
-
-    btnLoadDemo_ = new QPushButton(QStringLiteral("加载示例数据"), quickFrame);
-    btnLoadDemo_->setCursor(Qt::PointingHandCursor);
-    quickLayout->addWidget(btnLoadDemo_);
-
-    quickLayout->addStretch();
-
-    quickRow->addWidget(quickFrame, 2);
-
+    // 操作提示卡片：去除「快速开始」模块后，单独保留提示信息以简化界面。
     auto tipsFrame = new QFrame(pageWelcome_);
     tipsFrame->setObjectName(QStringLiteral("tipsFrame"));
     tipsFrame->setStyleSheet(QStringLiteral(
@@ -402,9 +361,7 @@ void CTViewer::buildWelcomePage()
     tipsLayout->addWidget(tips);
     tipsLayout->addStretch();
 
-    quickRow->addWidget(tipsFrame, 3);
-
-    vl->addLayout(quickRow);
+    vl->addWidget(tipsFrame);
 
     // 模块入口按钮，使用网格布局保持紧凑。
     auto moduleFrame = new QFrame(pageWelcome_);
@@ -537,6 +494,9 @@ void CTViewer::buildNavDock()
 {
     dockNav_ = new QDockWidget(QStringLiteral("欢迎"), this);
     dockNav_->setObjectName("navDock");
+    // 将导航面板限定在左侧并禁用拖拽，以满足固定显示的需求。
+    dockNav_->setAllowedAreas(Qt::LeftDockWidgetArea);
+    dockNav_->setFeatures(QDockWidget::NoDockWidgetFeatures);
     auto w = new QWidget(dockNav_);
     auto v = new QVBoxLayout(w);
     v->setContentsMargins(6, 6, 6, 6);
@@ -551,58 +511,6 @@ void CTViewer::buildNavDock()
     v->addWidget(listNav_);
     dockNav_->setWidget(w);
     addDockWidget(Qt::LeftDockWidgetArea, dockNav_);
-}
-
-void CTViewer::buildPropDock()
-{
-    dockProp_ = new QDockWidget(QStringLiteral("渲染调整"), this);
-    dockProp_->setObjectName("propDock");
-    auto w = new QWidget(dockProp_);
-    auto form = new QFormLayout(w);
-    form->setContentsMargins(8, 8, 8, 8);
-    form->setSpacing(6);
-
-    // WW
-    auto hWW = new QHBoxLayout();
-    sliderWW_ = new QSlider(Qt::Horizontal, w);
-    dsbWW_ = new QDoubleSpinBox(w);
-    dsbWW_->setDecimals(1);
-    dsbWW_->setMaximum(5000.0);
-    hWW->addWidget(sliderWW_);
-    hWW->addWidget(dsbWW_);
-    form->addRow(QStringLiteral("窗宽"), hWW);
-
-    // WL
-    auto hWL = new QHBoxLayout();
-    sliderWL_ = new QSlider(Qt::Horizontal, w);
-    dsbWL_ = new QDoubleSpinBox(w);
-    dsbWL_->setDecimals(1);
-    dsbWL_->setRange(-2000.0, 2000.0);
-    hWL->addWidget(sliderWL_);
-    hWL->addWidget(dsbWL_);
-    form->addRow(QStringLiteral("窗位"), hWL);
-
-    // 厚切片
-    sbSlab_ = new QSpinBox(w);
-    sbSlab_->setRange(1, 50);
-    form->addRow(QStringLiteral("厚切片(层)"), sbSlab_);
-
-    // 采样
-    cbInterp_ = new QComboBox(w);
-    cbInterp_->addItems({ QStringLiteral("Linear"), QStringLiteral("Nearest") });
-    form->addRow(QStringLiteral("采样"), cbInterp_);
-
-    // 预设
-    cbPreset_ = new QComboBox(w);
-    cbPreset_->addItems({ QStringLiteral("Bone"), QStringLiteral("Soft"), QStringLiteral("Lung") });
-    form->addRow(QStringLiteral("LUT 预设"), cbPreset_);
-
-    // 重置
-    btnReset_ = new QPushButton(QStringLiteral("重置"), w);
-    form->addRow(QString(), btnReset_);
-
-    dockProp_->setWidget(w);
-    addDockWidget(Qt::RightDockWidgetArea, dockProp_);
 }
 
 void CTViewer::wireSignals()
@@ -629,9 +537,6 @@ void CTViewer::wireSignals()
         stack_->setCurrentWidget(pageSlices_);
         statusBar()->showMessage(message, 1500);
         };
-    connect(btnOpenFile_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("打开数据集")); });
-    connect(btnCreateProject_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("创建新的重建项目")); });
-    connect(btnLoadDemo_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("加载示例数据")); });
     connect(btnVisCheck_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入视觉检查模块")); });
     connect(btnPorosity_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入孔隙度分析模块")); });
     connect(btnMetrology_, &QPushButton::clicked, this, [goToSlices]() { goToSlices(QStringLiteral("进入计量模块")); });
@@ -650,40 +555,13 @@ void CTViewer::wireSignals()
         statusBar()->showMessage(QStringLiteral("保持当前更改"), 1500);
         });
 
-    // WW/WL 双向联动（UI 级）
-    connect(sliderWW_, &QSlider::valueChanged, dsbWW_, &QDoubleSpinBox::setValue);
-    connect(sliderWL_, &QSlider::valueChanged, dsbWL_, &QDoubleSpinBox::setValue);
-    connect(dsbWW_, qOverload<double>(&QDoubleSpinBox::valueChanged),
-        this, [this](double v) { sliderWW_->setValue(int(v)); });
-    connect(dsbWL_, qOverload<double>(&QDoubleSpinBox::valueChanged),
-        this, [this](double v) { sliderWL_->setValue(int(v)); });
-
-    // 重置
-    connect(btnReset_, &QPushButton::clicked, this, [this]() {
-        dsbWW_->setValue(2000.0);
-        dsbWL_->setValue(300.0);
-        sbSlab_->setValue(1);
-        cbInterp_->setCurrentText("Linear");
-        cbPreset_->setCurrentText("Bone");
-        statusBar()->showMessage(QStringLiteral("参数已重置"), 1500);
-        });
 }
 
 void CTViewer::setDefaults()
 {
-    sliderWW_->setRange(1, 5000);
-    sliderWL_->setRange(-2000, 2000);
-    dsbWW_->setRange(1.0, 5000.0);
-    dsbWL_->setRange(-2000.0, 2000.0);
-
-    dsbWW_->setValue(2000.0);
-    dsbWL_->setValue(300.0);
-    sbSlab_->setValue(1);
-    cbInterp_->setCurrentText(QStringLiteral("Linear"));
-    cbPreset_->setCurrentText(QStringLiteral("Bone"));
-
     // 欢迎页为默认显示，确保导航列表同步选中第一个条目。
     if (listNav_) {
+        // 这里通过默认选中第一项，确保导航栏与当前页面一致。
         listNav_->setCurrentRow(0);
     }
 }
