@@ -375,7 +375,7 @@ void CTViewer::buildWelcomePage()
     auto moduleLayout = new QVBoxLayout(moduleFrame);
     moduleLayout->setContentsMargins(20, 18, 20, 18);
     moduleLayout->setSpacing(12);
-    auto moduleTitle = new QLabel(QStringLiteral("核心模块"), moduleFrame);
+    auto moduleTitle = new QLabel(QStringLiteral("选择最适合您工作流程的“开始”选项卡"), moduleFrame);
     moduleTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
     moduleLayout->addWidget(moduleTitle);
 
@@ -492,26 +492,118 @@ void CTViewer::buildSlicesPage()
 
 void CTViewer::buildNavDock()
 {
-    dockNav_ = new QDockWidget(QStringLiteral("欢迎"), this);
+    // 创建 DockWidget，隐藏标题栏，固定左侧，禁止拖动
+    dockNav_ = new QDockWidget(QStringLiteral("欢迎使用"), this);
     dockNav_->setObjectName("navDock");
-    // 将导航面板限定在左侧并禁用拖拽，以满足固定显示的需求。
     dockNav_->setAllowedAreas(Qt::LeftDockWidgetArea);
     dockNav_->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    dockNav_->setTitleBarWidget(new QWidget());
+
+    // Dock 样式
+    dockNav_->setStyleSheet(R"(
+        QDockWidget {
+            border: none;
+            background-color: #222;
+        }
+    )");
+
+    // 去除主窗口的 separator（边缝）
+    this->setStyleSheet(this->styleSheet() + R"(
+        QMainWindow::separator {
+            width: 0px;
+            height: 0px;
+            background: transparent;
+        }
+    )");
+
+    // Dock 内容容器
     auto w = new QWidget(dockNav_);
     auto v = new QVBoxLayout(w);
-    v->setContentsMargins(6, 6, 6, 6);
+    v->setContentsMargins(5, 0, 0, 0);
+    v->setSpacing(1);
+
+    // 列表控件
     listNav_ = new QListWidget(w);
+    listNav_->setFrameShape(QFrame::NoFrame);
     listNav_->setMinimumWidth(180);
-    listNav_->setStyleSheet("QListWidget{background:#222;color:#ddd;} QListWidget::item{height:30px;}");
-    for (auto s : { QStringLiteral("开始"), QStringLiteral("打开"), QStringLiteral("保存"),
-                   QStringLiteral("导入"), QStringLiteral("导出"), QStringLiteral("CT 重建"),
-                   QStringLiteral("帮助"), QStringLiteral("退出") }) {
-        listNav_->addItem(s);
-    }
+    listNav_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    listNav_->setStyleSheet(R"(
+        QListWidget {
+            background: #222;
+            color: #ddd;
+            border: none;
+        }
+        QListWidget::item {
+            height: 30px;
+        }
+        QListWidget::item:selected {
+            background: #444;
+            color: #fff;
+        }
+    )");
+
+    // === 辅助函数：添加文字项 ===
+    auto addItem = [this](const QString& text) {
+        auto item = new QListWidgetItem(text);
+        item->setSizeHint(QSize(180, 30));
+        listNav_->addItem(item);
+        };
+
+    // === 辅助函数：添加分割线 ===
+    auto addSeparator = [this]() {
+        auto sepItem = new QListWidgetItem();
+        sepItem->setFlags(Qt::NoItemFlags);
+        sepItem->setSizeHint(QSize(180, 12));
+        listNav_->addItem(sepItem);
+
+        auto line = new QFrame(listNav_);
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        line->setStyleSheet("color: #444; background: #444; margin: 6px 12px;");
+        listNav_->setItemWidget(sepItem, line);
+        };
+
+    // === 分组添加条目 ===
+
+    // 文件组
+    addItem(QStringLiteral("新建"));
+    addItem(QStringLiteral("打开"));
+    addItem(QStringLiteral("保存"));
+    addItem(QStringLiteral("另存为"));
+    addItem(QStringLiteral("打包"));
+    addItem(QStringLiteral("导出为mvgl"));
+    addSeparator();
+
+    // 数据操作组
+    addItem(QStringLiteral("快速导入"));
+    addItem(QStringLiteral("CT重建"));
+    addItem(QStringLiteral("导入"));
+    addItem(QStringLiteral("导出"));
+    addSeparator();
+
+    // 对象保存组
+    addItem(QStringLiteral("合并对象"));
+    addItem(QStringLiteral("保存对象"));
+    addItem(QStringLiteral("保存图像"));
+    addItem(QStringLiteral("保存影像/图像堆栈"));
+    addSeparator();
+
+    // 工具设置组
+    addItem(QStringLiteral("批处理"));
+    addItem(QStringLiteral("首选项"));
+    addSeparator();
+
+    // 退出
+    addItem(QStringLiteral("退出"));
+
+    // 加入布局
     v->addWidget(listNav_);
     dockNav_->setWidget(w);
     addDockWidget(Qt::LeftDockWidgetArea, dockNav_);
 }
+
+
+
 
 void CTViewer::wireSignals()
 {
