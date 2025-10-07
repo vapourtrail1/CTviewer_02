@@ -376,7 +376,7 @@ void CTViewer::buildWelcomePage()
     moduleLayout->setSpacing(12);
     auto moduleTitle = new QLabel(QStringLiteral("选择最适合您工作流程的“开始”选项卡"), moduleFrame);
     moduleTitle->setStyleSheet(QStringLiteral("font-size:16px; font-weight:600;"));
-    moduleLayout->addWidget(moduleTitle);
+    moduleLayout->addWidget(moduleTitle);//1
 
     auto grid = new QGridLayout();
     grid->setHorizontalSpacing(16);
