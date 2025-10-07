@@ -14,7 +14,7 @@ public:
     explicit PageBase(QWidget* parent = nullptr) : QWidget(parent) {}
     virtual ~PageBase() = default;
 
-    // 页面切入/切出时机（可选）
+    // 页面切入/切出时机
     virtual void onEnter() {}
     virtual void onLeave() {}
 
