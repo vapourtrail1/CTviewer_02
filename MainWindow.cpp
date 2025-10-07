@@ -1,4 +1,4 @@
-#include "CTViewer.h"
+#include "MainWindow.h"
 #include <QApplication>
 #include <QDockWidget>
 #include <QListWidget>

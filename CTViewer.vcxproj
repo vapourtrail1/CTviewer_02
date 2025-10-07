@@ -119,8 +119,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="CTViewer.qrc" />
-    <QtMoc Include="CTViewer.h" />
-    <ClCompile Include="CTViewer.cpp" />
+    <QtMoc Include="MainWindow.h" />
+    <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -26,10 +26,10 @@
     <QtRcc Include="CTViewer.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtMoc Include="CTViewer.h">
+    <QtMoc Include="MainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="CTViewer.cpp">
+    <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
