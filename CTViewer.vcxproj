@@ -118,10 +118,53 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtRcc Include="CTViewer.qrc" />
-    <QtMoc Include="MainWindow.h" />
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="core\commands\Command.cpp" />
+    <ClCompile Include="core\services\ProjectService.cpp" />
+    <ClCompile Include="core\services\VolumeService.cpp" />
+    <ClCompile Include="c_ui\action\ActionManager.cpp" />
+    <ClCompile Include="c_ui\action\Context.cpp" />
+    <ClCompile Include="c_ui\MainWindow.cpp" />
+    <ClCompile Include="c_ui\workbenches\AlignmentPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\AnalysisPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\AnimationPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\CADAndThen.cpp" />
+    <ClCompile Include="c_ui\workbenches\Document.cpp" />
+    <ClCompile Include="c_ui\workbenches\EditPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\GeometryPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\HelpPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\MeasurePage.cpp" />
+    <ClCompile Include="c_ui\workbenches\PerformancePage.cpp" />
+    <ClCompile Include="c_ui\workbenches\ReportPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\SelectPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\StartPage.cpp" />
+    <ClCompile Include="c_ui\workbenches\VolumePage.cpp" />
+    <ClCompile Include="c_ui\workbenches\WindowPage.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="core\commands\Command.h" />
+    <ClInclude Include="core\services\ProjectService.h" />
+    <ClInclude Include="core\services\VolumeService.h" />
+    <ClInclude Include="c_ui\action\ActionIDs.h" />
+    <QtMoc Include="c_ui\action\ActionManager.h" />
+    <ClInclude Include="c_ui\action\Context.h" />
+    <ClInclude Include="c_ui\workbenches\AlignmentPage.h" />
+    <ClInclude Include="c_ui\workbenches\AnalysisPage.h" />
+    <ClInclude Include="c_ui\workbenches\AnimationPage.h" />
+    <ClInclude Include="c_ui\workbenches\CADAndThen.h" />
+    <ClInclude Include="c_ui\workbenches\Document.h" />
+    <ClInclude Include="c_ui\workbenches\EditPage.h" />
+    <ClInclude Include="c_ui\workbenches\GeometryPage.h" />
+    <ClInclude Include="c_ui\workbenches\HelpPage.h" />
+    <ClInclude Include="c_ui\workbenches\MeasurePage.h" />
+    <ClInclude Include="c_ui\workbenches\PerformancePage.h" />
+    <ClInclude Include="c_ui\workbenches\ReportPage.h" />
+    <ClInclude Include="c_ui\workbenches\SelectPage.h" />
+    <QtMoc Include="c_ui\workbenches\StartPage.h" />
+    <QtMoc Include="c_ui\workbenches\VolumePage.h" />
+    <ClInclude Include="c_ui\workbenches\WindowPage.h" />
+    <QtMoc Include="c_ui\MainWindow.h" />
+    <QtMoc Include="c_ui\PageBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

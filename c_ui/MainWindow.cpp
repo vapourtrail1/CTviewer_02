@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+#include "c_ui/MainWindow.h"
 #include <QApplication>
 #include <QDockWidget>
 #include <QListWidget>
@@ -33,12 +33,11 @@ CTViewer::CTViewer(QWidget* parent)
     setWindowFlag(Qt::FramelessWindowHint);
     setWindowTitle(QStringLiteral("CTviewer_demo"));
 
-
     //颜色
     setStyleSheet(QStringLiteral(
-        "QMainWindow{background-color:#121212;}"
+        "QMainWindow{background-color:#121212;}"//
         "QDockWidget{background-color:#1a1a1a;color:#f0f0f0;}"
-        "QMenuBar, QStatusBar{background-color:#1a1a1a;color:#e0e0e0;}"));
+        "QMenuBar, QStatusBar{background-color:#1a1a1a;color:#e0e0e0;}"));//
 
     // ---- 构建自定义标题栏，放置中心标题与撤回按钮 ----
     buildTitleBar();
@@ -55,6 +54,8 @@ CTViewer::CTViewer(QWidget* parent)
 }
 
 CTViewer::~CTViewer() = default;
+
+
 
 
 void CTViewer::buildTitleBar()
@@ -207,7 +208,6 @@ void CTViewer::updateMaximizeButtonIcon()
     if (!btnMaximize_) {
         return;
     }
-
     if (isMaximized()) {
         btnMaximize_->setIcon(style()->standardIcon(QStyle::SP_TitleBarNormalButton));
         btnMaximize_->setToolTip(QStringLiteral("还原"));
@@ -243,7 +243,6 @@ bool CTViewer::eventFilter(QObject* watched, QEvent* event)
     if (!event) {
         return QMainWindow::eventFilter(watched, event);
     }
-
     const bool titleArea = (watched == titleBar_.data() || watched == titleLeftArea_.data() || watched == titleCenterArea_.data() || watched == titleLabel_.data());
     if (titleArea) {
         switch (event->type()) {
@@ -316,7 +315,7 @@ void CTViewer::buildWelcomePage()
 
     // 通过统一的样式表设置欢迎页背景以及文字颜色，打造与示例界面类似的深色风格。
     pageWelcome_->setStyleSheet(QStringLiteral(
-        "QWidget#pageWelcome{background-color:#181818;}"
+        "QWidget#pageWelcome{background-color:#404040;}"
         "QLabel{color:#f2f2f2;}"));
 
     auto vl = new QVBoxLayout(pageWelcome_);
@@ -328,7 +327,7 @@ void CTViewer::buildWelcomePage()
     auto banner = new QFrame(pageWelcome_);
     banner->setObjectName(QStringLiteral("heroBanner"));
     banner->setStyleSheet(QStringLiteral(
-        "QFrame#heroBanner{background:#262626; border-radius:10px;}"
+        "QFrame#heroBanner{background:#322F30; border-radius:10px;}"
         "QFrame#heroBanner QLabel{color:#f9f9f9;}"));
     auto bannerLayout = new QVBoxLayout(banner);
     bannerLayout->setContentsMargins(20, 16, 20, 16);
@@ -346,7 +345,7 @@ void CTViewer::buildWelcomePage()
     auto tipsFrame = new QFrame(pageWelcome_);
     tipsFrame->setObjectName(QStringLiteral("tipsFrame"));
     tipsFrame->setStyleSheet(QStringLiteral(
-        "QFrame#tipsFrame{background:#202020; border-radius:10px;}"
+        "QFrame#tipsFrame{background:#322F30; border-radius:10px;}"
         "QFrame#tipsFrame QLabel{color:#d8d8d8;}"));
     auto tipsLayout = new QVBoxLayout(tipsFrame);
     tipsLayout->setContentsMargins(20, 18, 20, 18);
@@ -367,10 +366,10 @@ void CTViewer::buildWelcomePage()
     auto moduleFrame = new QFrame(pageWelcome_);
     moduleFrame->setObjectName(QStringLiteral("moduleFrame"));
     moduleFrame->setStyleSheet(QStringLiteral(
-        "QFrame#moduleFrame{background:#202020; border-radius:10px;}"
-        "QFrame#moduleFrame QPushButton{background:#262626; border-radius:8px; border:1px solid #333;"
+        "QFrame#moduleFrame{background:#322F30; border-radius:10px;}"
+        "QFrame#moduleFrame QPushButton{background:#2C2C2C; border-radius:8px; border:1px solid #333;"
         " color:#f5f5f5; font-size:16px; padding:18px 12px;}"
-        "QFrame#moduleFrame QPushButton:hover{background:#313131; border-color:#4d6fff;}"
+        "QFrame#moduleFrame QPushButton:hover{background:#2C2C2C; border-color:#4d6fff;}"
         "QFrame#moduleFrame QLabel{color:#f5f5f5;}"));
     auto moduleLayout = new QVBoxLayout(moduleFrame);
     moduleLayout->setContentsMargins(20, 18, 20, 18);
@@ -401,7 +400,7 @@ void CTViewer::buildWelcomePage()
     auto recentFrame = new QFrame(pageWelcome_);
     recentFrame->setObjectName(QStringLiteral("recentFrame"));
     recentFrame->setStyleSheet(QStringLiteral(
-        "QFrame#recentFrame{background:#202020; border-radius:10px;}"
+        "QFrame#recentFrame{background:#322F30; border-radius:10px;}"
         "QFrame#recentFrame QLabel{color:#f5f5f5;}"
         "QFrame#recentFrame QHeaderView::section{background:#2c2c2c; color:#f0f0f0; border:0;}"
         "QFrame#recentFrame QTableWidget{background:transparent; border:0; color:#f5f5f5;}"
@@ -423,7 +422,7 @@ void CTViewer::buildWelcomePage()
     tableRecent_->setSelectionMode(QAbstractItemView::SingleSelection);
     tableRecent_->setAlternatingRowColors(true);
     tableRecent_->setStyleSheet(QStringLiteral(
-        "QTableWidget{alternate-background-color:#1f1f1f;}"
+        "QTableWidget{alternate-background-color:#2C2C2C;}"
         "QTableWidget QTableCornerButton::section{background:#2c2c2c;}"));
 
     struct RecentItem
@@ -503,23 +502,23 @@ void CTViewer::buildNavDock()
     dockNav_->setStyleSheet(R"(
         QDockWidget {
             border: none;
-            background-color: #222;
+            background-color: #181818;
         }
     )");
 
-    // 去除主窗口的 separator（边缝）
+    // 去除主窗口的 separator
     this->setStyleSheet(this->styleSheet() + R"(
         QMainWindow::separator {
             width: 0px;
             height: 0px;
-            background: transparent;
+            background: 181818;
         }
     )");
 
     // Dock 内容容器
     auto w = new QWidget(dockNav_);
     auto v = new QVBoxLayout(w);
-    v->setContentsMargins(5, 0, 0, 0);
+    v->setContentsMargins(0, 0, 0, 0);
     v->setSpacing(1);
 
     // 列表控件
@@ -529,7 +528,7 @@ void CTViewer::buildNavDock()
     listNav_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     listNav_->setStyleSheet(R"(
         QListWidget {
-            background: #222;
+            background: #181818;
             color: #ddd;
             border: none;
         }

@@ -1,41 +1,198 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="ui">
+      <UniqueIdentifier>{23d55672-a458-40dd-a207-20623f8f2fac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>qml;cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="style">
+      <UniqueIdentifier>{0d9e65f8-0fa1-4d15-af3b-c53ebcf5533f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="core\services">
+      <UniqueIdentifier>{6ec2907a-e104-41a7-a6a5-97450c4b2a63}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
+    <Filter Include="core\services\h">
+      <UniqueIdentifier>{03972615-4b07-4aa9-b3c4-637abeb161cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Translation Files">
-      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
-      <Extensions>ts</Extensions>
+    <Filter Include="core\services\cpp">
+      <UniqueIdentifier>{35c04778-8b75-4791-85b7-986e6d0b4fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\commands">
+      <UniqueIdentifier>{b85ca797-d815-4005-bf9d-e4e5fa88aa2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\commands\h">
+      <UniqueIdentifier>{16ae3288-8e7e-400e-9c93-7d4c04209610}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\commands\cpp">
+      <UniqueIdentifier>{f4e2ff9c-6251-4d15-8a5c-d69a4b9aff86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\action">
+      <UniqueIdentifier>{660a45d4-aadb-40ee-9962-b0df9b41f6b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\workbenches">
+      <UniqueIdentifier>{0f44101f-908d-46dd-9ad5-948cff35cb6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\h">
+      <UniqueIdentifier>{787a20f3-207c-4d0e-854a-36d5f4812535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\cpp">
+      <UniqueIdentifier>{2455b8ba-1d1a-4fa5-aec0-633bbbfa9f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\action\h">
+      <UniqueIdentifier>{ca90986d-2d68-4b99-96b4-dc43536331e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\action\cpp">
+      <UniqueIdentifier>{0ecb87de-52a7-4eaa-91f3-c9eb7d2ff376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\workbenches\h">
+      <UniqueIdentifier>{1380fca8-e60b-4588-85d5-4f4d2233a704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\workbenches\cpp">
+      <UniqueIdentifier>{b3f980ed-3673-49ba-9e88-82600d96ced2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="CTViewer.qrc">
-      <Filter>Resource Files</Filter>
-    </QtRcc>
-    <QtMoc Include="MainWindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClCompile Include="MainWindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="core\commands\Command.cpp">
+      <Filter>core\commands\cpp</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="core\services\VolumeService.cpp">
+      <Filter>core\services\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="core\services\ProjectService.cpp">
+      <Filter>core\services\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\MainWindow.cpp">
+      <Filter>ui\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\action\ActionManager.cpp">
+      <Filter>ui\action\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\action\Context.cpp">
+      <Filter>ui\action\cpp</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ui\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="c_ui\workbenches\WindowPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\VolumePage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\StartPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\SelectPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\ReportPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\PerformancePage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\MeasurePage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\HelpPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\GeometryPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\EditPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\Document.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\CADAndThen.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\AnimationPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\AnalysisPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="c_ui\workbenches\AlignmentPage.cpp">
+      <Filter>ui\workbenches\cpp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="core\commands\Command.h">
+      <Filter>core\commands\h</Filter>
+    </ClInclude>
+    <ClInclude Include="core\services\ProjectService.h">
+      <Filter>core\services\h</Filter>
+    </ClInclude>
+    <ClInclude Include="core\services\VolumeService.h">
+      <Filter>core\services\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\action\ActionIDs.h">
+      <Filter>ui\action\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\action\Context.h">
+      <Filter>ui\action\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\AlignmentPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\AnalysisPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\AnimationPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\CADAndThen.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\EditPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\Document.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\GeometryPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\HelpPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\MeasurePage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\ReportPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\PerformancePage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\SelectPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+    <ClInclude Include="c_ui\workbenches\WindowPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="c_ui\MainWindow.h">
+      <Filter>ui\h</Filter>
+    </QtMoc>
+    <QtMoc Include="c_ui\PageBase.h">
+      <Filter>ui\h</Filter>
+    </QtMoc>
+    <QtMoc Include="c_ui\workbenches\VolumePage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </QtMoc>
+    <QtMoc Include="c_ui\action\ActionManager.h">
+      <Filter>ui\action\h</Filter>
+    </QtMoc>
+    <QtMoc Include="c_ui\workbenches\StartPage.h">
+      <Filter>ui\workbenches\h</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
