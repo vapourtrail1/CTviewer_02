@@ -1,25 +1,27 @@
 #include "c_ui/workbenches/StartPage.h"
 #include "c_ui/action/ActionIDs.h"
-#include <QVBoxLayout>
-#include <QGridLayout>
-#include <QLabel>
+
+#include <QAbstractItemView>
 #include <QFrame>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QLabel>
 #include <QPushButton>
 #include <QTableWidget>
-#include <QHeaderView>
-#include <QAbstractItemView>
 #include <QTableWidgetItem>
+#include <QVBoxLayout>
 
 StartPage::StartPage(QWidget* parent) : PageBase(parent) {
     buildUi();
 }
 
 QList<MenuSpec> StartPage::menus() const {
+    // ä¸ºèµ·å§‹é¡µæä¾›ä¸é¡¶å±‚èœå•å¯¹åº”çš„åç§°å’ŒåŠ¨ä½œé›†åˆ
     return {
-        { QStringLiteral("ÎÄ¼ş"),   { Act_NewProject, Act_Open, Act_Save, Act_SaveAs, Act_Exit } },
-        { QStringLiteral("¿ªÊ¼"),   { Act_QuickImport, Act_CTReconstruct, Act_Import, Act_Export } },
-        { QStringLiteral("±à¼­"),   { Act_Undo, Act_Redo } },
-        { QStringLiteral("Ê×Ñ¡Ïî"), { Act_Preferences } }
+        { QStringLiteral("æ–‡ä»¶"),   { Act_NewProject, Act_Open, Act_Save, Act_SaveAs, Act_Exit } },
+        { QStringLiteral("æ•°æ®"),   { Act_QuickImport, Act_CTReconstruct, Act_Import, Act_Export } },
+        { QStringLiteral("ç¼–è¾‘"),   { Act_Undo, Act_Redo } },
+        { QStringLiteral("è®¾ç½®"), { Act_Preferences } }
     };
 }
 
@@ -31,40 +33,40 @@ void StartPage::buildUi() {
     vl->setContentsMargins(18, 18, 18, 18);
     vl->setSpacing(16);
 
-    // ¶¥²¿ºá·ù
+    // æ„å»ºé¡¶éƒ¨æ¬¢è¿æ¨ªå¹…
     auto banner = new QFrame(this);
     banner->setObjectName("heroBanner");
     banner->setStyleSheet("QFrame#heroBanner{background:#322F30; border-radius:10px;} QFrame#heroBanner QLabel{color:#f9f9f9;}");
     auto bannerLayout = new QVBoxLayout(banner);
     bannerLayout->setContentsMargins(20, 16, 20, 16);
     bannerLayout->setSpacing(8);
-    auto title = new QLabel(QStringLiteral("»¶Ó­Ê¹ÓÃ CTviewer_demo"), banner);
+    auto title = new QLabel(QStringLiteral("æ¬¢è¿ä½¿ç”¨ CTviewer"), banner);
     title->setStyleSheet("font-size:24px;font-weight:700;");
     bannerLayout->addWidget(title);
-    auto subtitle = new QLabel(QStringLiteral("¼ÌĞø×î½üÏîÄ¿£¬»òÍ¨¹ıÏÂ·½Ä£¿é¿ìËÙ¿ªÊ¼ÄúµÄ¹¤Òµ CT ¹¤×÷Á÷³Ì¡£"), banner);
+    auto subtitle = new QLabel(QStringLiteral("ç«‹å³ä½“éªŒå·¥ä¸š CT æ•°æ®åˆ†æçš„å®Œæ•´æµç¨‹"), banner);
     subtitle->setStyleSheet("font-size:14px;color:#bbbbbb;");
     subtitle->setWordWrap(true);
     bannerLayout->addWidget(subtitle);
     vl->addWidget(banner);
 
-    // ²Ù×÷ÌáÊ¾
+    // æç¤ºåŒºåŸŸå±•ç¤ºç®€å•çš„ä½¿ç”¨å»ºè®®
     auto tipsFrame = new QFrame(this);
     tipsFrame->setObjectName("tipsFrame");
     tipsFrame->setStyleSheet("QFrame#tipsFrame{background:#322F30;border-radius:10px;} QFrame#tipsFrame QLabel{color:#d8d8d8;}");
     auto tipsLayout = new QVBoxLayout(tipsFrame);
     tipsLayout->setContentsMargins(20, 18, 20, 18);
     tipsLayout->setSpacing(10);
-    auto tipsTitle = new QLabel(QStringLiteral("²Ù×÷ÌáÊ¾"), tipsFrame);
+    auto tipsTitle = new QLabel(QStringLiteral("ä½¿ç”¨æç¤º"), tipsFrame);
     tipsTitle->setStyleSheet("font-size:16px;font-weight:600;");
     tipsLayout->addWidget(tipsTitle);
-    auto tips = new QLabel(QStringLiteral("1.¿ÉÖ±½Óµ¼Èë DICOM¡¢TIFF¡¢RAW µÈ³£¼û¹¤Òµ CT Êı¾İ¡£\n2.ÈôĞèÅàÑµ×ÊÁÏ£¬¿É·ÃÎÊ°ïÖúÖĞĞÄÒÔ»ñÈ¡×îĞÂ½Ì³Ì¡£"), tipsFrame);
+    auto tips = new QLabel(QStringLiteral("1. ç›´æ¥æ‹–æ‹½ DICOM/TIFF/RAW æ•°æ®å¼€å§‹æ–°çš„ CT é¡¹ç›®ã€‚\n2. å»ºè®®é˜…è¯»å…¥é—¨æŒ‡å—äº†è§£é‡å»ºæµç¨‹ã€‚"), tipsFrame);
     tips->setWordWrap(true);
     tips->setStyleSheet("font-size:13px;line-height:20px;");
     tipsLayout->addWidget(tips);
     tipsLayout->addStretch();
     vl->addWidget(tipsFrame);
 
-    // ¿ìËÙÈë¿Ú
+    // å¿«é€Ÿæ¨¡å—å…¥å£ï¼Œä¾¿äºç”¨æˆ·ç›´è¾¾æ ¸å¿ƒåŠŸèƒ½
     auto moduleFrame = new QFrame(this);
     moduleFrame->setObjectName("moduleFrame");
     moduleFrame->setStyleSheet(
@@ -76,19 +78,21 @@ void StartPage::buildUi() {
     auto moduleLayout = new QVBoxLayout(moduleFrame);
     moduleLayout->setContentsMargins(20, 18, 20, 18);
     moduleLayout->setSpacing(12);
-    auto moduleTitle = new QLabel(QStringLiteral("Ñ¡Ôñ×îÊÊºÏÄú¹¤×÷Á÷³ÌµÄ¡°¿ªÊ¼¡±Ñ¡Ïî¿¨"), moduleFrame);
+    auto moduleTitle = new QLabel(QStringLiteral("é€‰æ‹©å¸¸ç”¨çš„å¿«é€Ÿå¼€å§‹æ¨¡å—"), moduleFrame);
     moduleTitle->setStyleSheet("font-size:16px;font-weight:600;");
     moduleLayout->addWidget(moduleTitle);
 
     auto grid = new QGridLayout();
     grid->setHorizontalSpacing(16);
     grid->setVerticalSpacing(16);
-    btnVisCheck_ = new QPushButton(QStringLiteral("ÊÓ¾õ¼ì²é"), moduleFrame);
-    btnPorosity_ = new QPushButton(QStringLiteral("¿×Ï¶¶È"), moduleFrame);
-    btnMetrology_ = new QPushButton(QStringLiteral("¼ÆÁ¿"), moduleFrame);
-    btnMaterial_ = new QPushButton(QStringLiteral("²ÄÁÏ"), moduleFrame);
-    for (auto* b : { btnVisCheck_.data(), btnPorosity_.data(), btnMetrology_.data(), btnMaterial_.data() })
+    btnVisCheck_ = new QPushButton(QStringLiteral("å¯è§†æ£€æŸ¥"), moduleFrame);
+    btnPorosity_ = new QPushButton(QStringLiteral("å­”éš™åˆ†æ"), moduleFrame);
+    btnMetrology_ = new QPushButton(QStringLiteral("å°ºå¯¸æµ‹é‡"), moduleFrame);
+    btnMaterial_ = new QPushButton(QStringLiteral("ææ–™åˆ†æ"), moduleFrame);
+    for (auto* b : { btnVisCheck_.data(), btnPorosity_.data(), btnMetrology_.data(), btnMaterial_.data() }) {
+        // ä¿è¯æŒ‰é’®åœ¨é«˜åˆ†è¾¨ç‡å±å¹•ä¸Šä»ç„¶å¯è§
         b->setMinimumSize(160, 70);
+    }
     grid->addWidget(btnVisCheck_, 0, 0);
     grid->addWidget(btnPorosity_, 0, 1);
     grid->addWidget(btnMetrology_, 0, 2);
@@ -96,7 +100,7 @@ void StartPage::buildUi() {
     moduleLayout->addLayout(grid);
     vl->addWidget(moduleFrame);
 
-    // ×î½üÏîÄ¿
+    // æœ€è¿‘é¡¹ç›®åˆ—è¡¨ï¼Œå¸®åŠ©ç”¨æˆ·å¿«é€Ÿå›åˆ°æœ€è¿‘çš„å·¥ä½œ
     auto recentFrame = new QFrame(this);
     recentFrame->setObjectName("recentFrame");
     recentFrame->setStyleSheet(
@@ -109,12 +113,12 @@ void StartPage::buildUi() {
     auto recentLayout = new QVBoxLayout(recentFrame);
     recentLayout->setContentsMargins(20, 18, 20, 18);
     recentLayout->setSpacing(12);
-    auto recentTitle = new QLabel(QStringLiteral("×î½üÏîÄ¿"), recentFrame);
+    auto recentTitle = new QLabel(QStringLiteral("æœ€è¿‘é¡¹ç›®"), recentFrame);
     recentTitle->setStyleSheet("font-size:16px;font-weight:600;");
     recentLayout->addWidget(recentTitle);
 
     tableRecent_ = new QTableWidget(0, 3, recentFrame);
-    tableRecent_->setHorizontalHeaderLabels({ QStringLiteral("Ãû³Æ"), QStringLiteral("Î»ÖÃ"), QStringLiteral("ÉÏ´Î´ò¿ª") });
+    tableRecent_->setHorizontalHeaderLabels({ QStringLiteral("ç±»å‹"), QStringLiteral("ä½ç½®"), QStringLiteral("æœ€è¿‘æ‰“å¼€æ—¶é—´") });
     tableRecent_->horizontalHeader()->setStretchLastSection(true);
     tableRecent_->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     tableRecent_->verticalHeader()->setVisible(false);
@@ -123,13 +127,20 @@ void StartPage::buildUi() {
     tableRecent_->setSelectionMode(QAbstractItemView::SingleSelection);
     tableRecent_->setAlternatingRowColors(true);
     tableRecent_->setStyleSheet("QTableWidget{alternate-background-color:#2C2C2C;} QTableWidget QTableCornerButton::section{background:#2c2c2c;}");
-    struct RecentItem { QString name; QString path; QString time; };
-    const QList<RecentItem> recents = {
-        { QStringLiteral("·¢¶¯»ú¸×Ìå.vgl"), QStringLiteral("D:/Projects/CT/EngineBlock"), QStringLiteral("½ñÌì 09:24") },
-        { QStringLiteral("³İÂÖÏä.vgl"),     QStringLiteral("D:/Projects/CT/GearBox"),     QStringLiteral("×òÌì 17:42") },
-        { QStringLiteral("Ò¶Æ¬É¨Ãè.vgi"),   QStringLiteral("E:/Scan/Blade"),              QStringLiteral("2024-05-12") },
-        { QStringLiteral("²ÄÁÏÊÔÑù.raw"),   QStringLiteral("E:/Lab/Materials"),           QStringLiteral("2024-04-28") }
+
+    struct RecentItem {
+        QString name;
+        QString path;
+        QString time;
     };
+
+    const QList<RecentItem> recents = {
+        { QStringLiteral("æ¨¡å‹.vgl"), QStringLiteral("D:/Projects/CT/EngineBlock"), QStringLiteral("2024-05-20 09:24") },
+        { QStringLiteral("é½¿è½®ç®±.vgl"), QStringLiteral("D:/Projects/CT/GearBox"), QStringLiteral("2024-05-18 17:42") },
+        { QStringLiteral("å¶ç‰‡æ‰«æ.vgi"), QStringLiteral("E:/Scan/Blade"), QStringLiteral("2024-05-12 14:06") },
+        { QStringLiteral("ææ–™åˆ‡ç‰‡.raw"), QStringLiteral("E:/Lab/Materials"), QStringLiteral("2024-04-28 10:31") }
+    };
+
     for (const auto& item : recents) {
         const int row = tableRecent_->rowCount();
         tableRecent_->insertRow(row);
@@ -137,16 +148,20 @@ void StartPage::buildUi() {
         tableRecent_->setItem(row, 1, new QTableWidgetItem(item.path));
         tableRecent_->setItem(row, 2, new QTableWidgetItem(item.time));
     }
+
     tableRecent_->setMinimumHeight(220);
     recentLayout->addWidget(tableRecent_);
     vl->addWidget(recentFrame);
     vl->addStretch();
 
-    // Ìø×ªµ½¡°CTÖØ½¨¡±¹¤×÷Ì¨
+    // ä¸ºæŒ‰é’®å’Œæœ€è¿‘é¡¹ç›®æä¾›ç»Ÿä¸€çš„è·³è½¬é€»è¾‘
     auto goReconstruct = [this]() { emit requestSwitchTo("volume"); };
     connect(btnVisCheck_, &QPushButton::clicked, this, goReconstruct);
     connect(btnPorosity_, &QPushButton::clicked, this, goReconstruct);
     connect(btnMetrology_, &QPushButton::clicked, this, goReconstruct);
     connect(btnMaterial_, &QPushButton::clicked, this, goReconstruct);
-    connect(tableRecent_, &QTableWidget::itemDoubleClicked, this, [goReconstruct](auto*) { goReconstruct(); });
+    connect(tableRecent_, &QTableWidget::itemDoubleClicked, this, [goReconstruct](auto*) {
+        // åŒå‡»æœ€è¿‘é¡¹ç›®æ—¶æ‰§è¡Œä¸æŒ‰é’®ç›¸åŒçš„è·³è½¬
+        goReconstruct();
+    });
 }
