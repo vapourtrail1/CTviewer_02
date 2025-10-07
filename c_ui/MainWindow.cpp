@@ -322,6 +322,29 @@ void CTViewer::buildWelcomePage()
     vl->setContentsMargins(18, 18, 18, 18);
     vl->setSpacing(16);
 
+    // ---- 顶部操作行：补齐撤回/保持按钮供标题栏同步使用 ----
+    auto actionRow = new QFrame(pageWelcome_);
+    actionRow->setObjectName(QStringLiteral("welcomeActionRow"));
+    actionRow->setStyleSheet(QStringLiteral(
+        "QFrame#welcomeActionRow{background:#322F30; border-radius:10px;}"
+        "QFrame#welcomeActionRow QPushButton{background:#2C2C2C; border-radius:8px; border:1px solid #333;"
+        " color:#f5f5f5; padding:8px 18px;}"
+        "QFrame#welcomeActionRow QPushButton:hover{border-color:#4d6fff;}"));
+    auto actionLayout = new QHBoxLayout(actionRow);
+    actionLayout->setContentsMargins(20, 12, 20, 12);
+    actionLayout->setSpacing(12);
+
+    btnUndo_ = new QPushButton(QStringLiteral("撤回"), actionRow);
+    btnUndo_->setCursor(Qt::PointingHandCursor);
+    actionLayout->addWidget(btnUndo_);
+
+    btnKeep_ = new QPushButton(QStringLiteral("保持更改"), actionRow);
+    btnKeep_->setCursor(Qt::PointingHandCursor);
+    actionLayout->addWidget(btnKeep_);
+
+    actionLayout->addStretch();
+    vl->addWidget(actionRow);
+
 
     // 顶部横幅，显示产品名称与版本信息。
     auto banner = new QFrame(pageWelcome_);
