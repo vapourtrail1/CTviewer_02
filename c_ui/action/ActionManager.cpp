@@ -8,36 +8,49 @@
 ActionManager::ActionManager(QObject* parent) : QObject(parent) {}
 
 QAction* ActionManager::action(int id) {
-    if (map_.contains(id)) return map_[id];
-    auto a = new QAction(this);
-    switch (id) {
-    case Act_NewProject:    a->setText(QObject::tr("ĞÂ½¨"));        break;
-    case Act_Open:          a->setText(QObject::tr("´ò¿ª..."));     break;
-    case Act_Save:          a->setText(QObject::tr("±£´æ"));        break;
-    case Act_SaveAs:        a->setText(QObject::tr("Áí´æÎª..."));   break;
-    case Act_Exit:          a->setText(QObject::tr("ÍË³ö"));        break;
-    case Act_QuickImport:   a->setText(QObject::tr("¿ìËÙµ¼Èë"));    break;
-    case Act_Import:        a->setText(QObject::tr("µ¼Èë"));        break;
-    case Act_Export:        a->setText(QObject::tr("µ¼³ö"));        break;
-    case Act_CTReconstruct: a->setText(QObject::tr("CTÖØ½¨"));      break;
-    case Act_Undo:          a->setText(QObject::tr("³·Ïú"));        break;
-    case Act_Redo:          a->setText(QObject::tr("ÖØ×ö"));        break;
-    case Act_VolumeCrop:    a->setText(QObject::tr("²Ã¼ôÌå»ı"));    break;
-    case Act_ResetView:     a->setText(QObject::tr("ÖØÖÃÊÓÍ¼"));    break;
-    case Act_FitAll:        a->setText(QObject::tr("ÊÊÅäÈ«Í¼"));    break;
-    case Act_Preferences:   a->setText(QObject::tr("Ê×Ñ¡Ïî"));      break;
-    default:                a->setText(QObject::tr("¶¯×÷"));        break;
+    if (map_.contains(id)) {
+        return map_[id];
     }
-    connect(a, &QAction::triggered, this, [this, id] { emit triggered(id); });
+
+    auto a = new QAction(this);
+    // ---- æ ¹æ®åŠ¨ä½œç¼–å·å¡«å……æ˜“è¯»çš„ä¸­æ–‡æ ‡é¢˜ï¼Œé¿å…ä¹±ç å¯¼è‡´çš„ä¸å¯ç”¨èœå• ----
+    switch (id) {
+    case Act_NewProject:    a->setText(QObject::tr("æ–°å»º"));            break;
+    case Act_Open:          a->setText(QObject::tr("æ‰“å¼€"));            break;
+    case Act_Save:          a->setText(QObject::tr("ä¿å­˜"));            break;
+    case Act_SaveAs:        a->setText(QObject::tr("å¦å­˜ä¸º"));          break;
+    case Act_Exit:          a->setText(QObject::tr("é€€å‡º"));            break;
+    case Act_QuickImport:   a->setText(QObject::tr("å¿«é€Ÿå¯¼å…¥"));        break;
+    case Act_Import:        a->setText(QObject::tr("å¯¼å…¥"));            break;
+    case Act_Export:        a->setText(QObject::tr("å¯¼å‡º"));            break;
+    case Act_CTReconstruct: a->setText(QObject::tr("CT é‡å»º"));         break;
+    case Act_Undo:          a->setText(QObject::tr("æ’¤é”€"));            break;
+    case Act_Redo:          a->setText(QObject::tr("é‡åš"));            break;
+    case Act_VolumeCrop:    a->setText(QObject::tr("ä½“ç§¯è£å‰ª"));        break;
+    case Act_ResetView:     a->setText(QObject::tr("é‡ç½®è§†å›¾"));        break;
+    case Act_FitAll:        a->setText(QObject::tr("é€‚é…å…¨æ™¯"));        break;
+    case Act_Preferences:   a->setText(QObject::tr("é¦–é€‰é¡¹"));          break;
+    default:                a->setText(QObject::tr("æœªå‘½åæ“ä½œ"));      break;
+    }
+
+    connect(a, &QAction::triggered, this, [this, id] {
+        emit triggered(id);
+    });
     map_[id] = a;
     return a;
 }
 
 void ActionManager::buildMenuBar(QMenuBar* bar, const QList<MenuSpec>& spec) {
+    if (!bar) {
+        return;
+    }
+
     bar->clear();
+    // ---- ä¾æ®æä¾›çš„èœå•è§„æ ¼æ„é€ èœå•ç»“æ„ï¼Œå¹¶å¤ç”¨ action() åˆ›å»ºå‡ºçš„ QAction ----
     for (const auto& m : spec) {
         auto menu = bar->addMenu(m.menuTitle);
-        for (int id : m.actionIDs)
-            menu->addAction(action(id));
+        for (int actionId : m.actionIDs) {
+            menu->addAction(action(actionId));
+        }
     }
 }
