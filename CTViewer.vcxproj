@@ -152,7 +152,7 @@
     <ClInclude Include="c_ui\workbenches\AnalysisPage.h" />
     <ClInclude Include="c_ui\workbenches\AnimationPage.h" />
     <ClInclude Include="c_ui\workbenches\CADAndThen.h" />
-    <ClInclude Include="c_ui\workbenches\Document.h" />
+    <QtMoc Include="c_ui\workbenches\Document.h" />
     <ClInclude Include="c_ui\workbenches\EditPage.h" />
     <ClInclude Include="c_ui\workbenches\GeometryPage.h" />
     <ClInclude Include="c_ui\workbenches\HelpPage.h" />
@@ -160,7 +160,7 @@
     <ClInclude Include="c_ui\workbenches\PerformancePage.h" />
     <ClInclude Include="c_ui\workbenches\ReportPage.h" />
     <ClInclude Include="c_ui\workbenches\SelectPage.h" />
-    <QtMoc Include="c_ui\workbenches\StartPage.h" />
+    <ClInclude Include="c_ui\workbenches\StartPage.h" />
     <QtMoc Include="c_ui\workbenches\VolumePage.h" />
     <ClInclude Include="c_ui\workbenches\WindowPage.h" />
     <QtMoc Include="c_ui\MainWindow.h" />
