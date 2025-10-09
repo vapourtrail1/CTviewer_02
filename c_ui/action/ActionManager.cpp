@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QMenu>
+#include <QDebug>
 
 ActionManager::ActionManager(QObject* parent) : QObject(parent) {}
 
@@ -11,7 +12,6 @@ QAction* ActionManager::action(int id) {
     if (map_.contains(id)) {
         return map_[id];
     }
-
     auto a = new QAction(this);
     // ---- 根据动作编号填充易读的中文标题，避免乱码导致的不可用菜单 ----
     switch (id) {
