@@ -9,6 +9,7 @@
 #include <QStatusBar>
 #include <QMouseEvent>
 #include <QEvent>
+#include <QStringList>
 
 #if USE_VTK
 #include <QVTKOpenGLNativeWidget.h>
@@ -22,7 +23,7 @@ CTViewer::CTViewer(QWidget* parent)
 {
     // ---- 无边框窗口 + 深色主题 ----
     setWindowFlag(Qt::FramelessWindowHint);
-    setWindowTitle(QStringLiteral("CTviewer_demo"));
+    setWindowTitle(QStringLiteral("CTViewer_demo"));
     setStyleSheet(QStringLiteral(
         "QMainWindow{background-color:#121212;}"
         "QMenuBar, QStatusBar{background-color:#1a1a1a; color:#e0e0e0;}"));
@@ -44,17 +45,28 @@ CTViewer::~CTViewer() = default;
 
 void CTViewer::buildTitleBar()
 {
-    titleBar_ = new QWidget(this);
+    //拼接新的标签栏
+	auto* topBarContainer = new QWidget(this);
+	auto* topBarLayout = new QVBoxLayout(topBarContainer);
+    topBarLayout->setContentsMargins(0, 0, 0, 0);//这句话的作用是去掉边框
+	topBarLayout->setSpacing(0);//这句话的作用是去掉边框
+
+    topBarContainer->setAttribute(Qt::WA_StyledBackground, true);
+    topBarContainer->setStyleSheet(QStringLiteral("QWidget{background-color:#202020;}"));
+
+    titleBar_ = new QWidget(topBarContainer);
+    titleBar_->setAttribute(Qt::WA_StyledBackground, true);
     titleBar_->setObjectName(QStringLiteral("customTitleBar"));
     titleBar_->setFixedHeight(38);
     titleBar_->setStyleSheet(QStringLiteral(
         "QWidget#customTitleBar{background-color:#202020;}"
         "QToolButton{background:transparent; border:none; color:#f5f5f5; padding:6px;}"
-        "QToolButton:hover{background-color:rgba(255,255,255,0.12);}"
+        "QToolButton:hover{background-color:rgba(255,255,255,0.12);}" 
         "QLabel#titleLabel{color:#f5f5f5; font-size:14px; font-weight:600;}"));
 
     auto* barLayout = new QHBoxLayout(titleBar_);
-    barLayout->setContentsMargins(10, 0, 4, 0);
+    // 将内边距设为 0，保证标题栏背景可以延伸到窗口最右侧无留白。
+    barLayout->setContentsMargins(0, 0, 0, 0);
     barLayout->setSpacing(0);
 
     // ---- 左侧撤回/前进按钮 ----
@@ -117,9 +129,50 @@ void CTViewer::buildTitleBar()
 
     // ---- 安装拖拽事件 ----
     titleBar_->installEventFilter(this);
-    setMenuWidget(titleBar_);
+	topBarLayout->addWidget(titleBar_);
 
-    // ---- 连接标题栏按钮 ----
+    //标题栏
+    ribbontabBar_ = new QTabBar(topBarContainer);
+    ribbontabBar_->setObjectName(QStringLiteral("mainRibbonTabBar"));
+    ribbontabBar_->setDrawBase(false);
+    ribbontabBar_->setExpanding(false);
+    ribbontabBar_->setMovable(false);
+    ribbontabBar_->setAttribute(Qt::WA_StyledBackground, true); // 让标签栏自绘背景色。
+    ribbontabBar_->setStyleSheet(QStringLiteral(
+        "QTabBar#mainRibbonTabBar{background-color:#202020; color:#f5f5f5;}"
+        "QTabBar#mainRibbonTabBar::tab{padding:8px 16px; margin:0px; border:none; background-color:#202020;}"
+        "QTabBar#mainRibbonTabBar::tab:selected{background-color:#333333;}"
+        "QTabBar#mainRibbonTabBar::tab:hover{background-color:#2a2a2a;}"));
+    //填充标签名称 别的标签页暂时占位置
+    const QStringList tabNames = {
+           QStringLiteral("文件"),
+           QStringLiteral("开始"),
+           QStringLiteral("编辑"),
+           QStringLiteral("体积"),
+           QStringLiteral("选择"),
+           QStringLiteral("对齐"),
+           QStringLiteral("几何"),
+           QStringLiteral("测量"),
+           QStringLiteral("CAD/表面测量"),
+           QStringLiteral("分析"),
+           QStringLiteral("报告"),
+           QStringLiteral("动画"),
+           QStringLiteral("窗口"),
+           QStringLiteral("量具"),
+           QStringLiteral("可视化"),
+    };
+    for (auto& name:tabNames)
+    {
+        ribbontabBar_->addTab(name);
+    }
+	ribbontabBar_->setCurrentIndex(0);//把下标设置成0 默认选中第一个标签页
+	topBarLayout->addWidget(ribbontabBar_);
+
+	//把整个标题栏放到主窗口
+	setMenuWidget(topBarContainer);
+
+
+    //  连接标题栏按钮 
     connect(btnMinimize_, &QToolButton::clicked, this, &CTViewer::showMinimized);
     connect(btnMaximize_, &QToolButton::clicked, this, [this]() {
         if (isMaximized()) showNormal();
@@ -128,6 +181,24 @@ void CTViewer::buildTitleBar()
         });
     connect(btnClose_, &QToolButton::clicked, this, &CTViewer::close);
 
+    //标签栏交互
+    connect(ribbontabBar_, &QTabBar::currentChanged, this, [this](int index) {
+        //仅先交互DocumentPage
+        if (!stack_) {
+            return;
+        }
+        if (index == 0 && pageDocument_) {
+			stack_->setCurrentWidget(pageDocument_);//setcurrentwidget是切换当前显示的页面
+            statusBar()->showMessage(QStringLiteral("已切换到“文件”功能区"), 1500);
+			
+        }
+        else if (index >= 0) {
+            statusBar()->showMessage(QStringLiteral("“%1”功能暂未实现").arg(ribbontabBar_->tabText(index)), 1500);
+        }
+        
+		});
+
+    
     updateMaximizeButtonIcon();
 }
 

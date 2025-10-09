@@ -5,6 +5,7 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QStackedWidget>
+#include <QTabBar>
 
 class DocumentPage;
 
@@ -36,11 +37,12 @@ private:
     QPointer<QToolButton> btnMinimize_;
     QPointer<QToolButton> btnMaximize_;
     QPointer<QToolButton> btnClose_;
+	QPointer<QTabBar> ribbontabBar_;//主界面状态栏指针
 
     bool draggingWindow_ = false;
     QPoint dragOffset_;
 
     // ---- 中央区 ----
     QPointer<QStackedWidget> stack_;
-    QPointer<DocumentPage> pageDocument_;
+	QPointer<DocumentPage> pageDocument_;//文档页面的指针
 };

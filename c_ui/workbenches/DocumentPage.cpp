@@ -12,6 +12,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 
+
 DocumentPage::DocumentPage(QWidget* parent)
     : QWidget(parent)
 {
@@ -20,8 +21,8 @@ DocumentPage::DocumentPage(QWidget* parent)
     wireRightContentSignals();
 }
 
-/**
- * @brief 构建整页：左右分栏（左：导航，右：主内容）
+/*
+ *  构建整页：左右分栏（左：导航，右：主内容）
  */
 void DocumentPage::buildUi()
 {
@@ -34,7 +35,7 @@ void DocumentPage::buildUi()
     hl->setContentsMargins(0, 0, 0, 0);
     hl->setSpacing(0);
 
-    // 左侧“Dock”区
+    // 左侧Dock区
     buildLeftDock();
     hl->addWidget(listNav_, 0); // 固定宽度在 buildLeftDock 中设置
 
@@ -43,8 +44,8 @@ void DocumentPage::buildUi()
     hl->addWidget(right, 1);
 }
 
-/**
- * @brief 构建左侧导航列表（本页独有的“dock”）
+/*
+ *  构建左侧导航列表
  */
 void DocumentPage::buildLeftDock()
 {
@@ -93,17 +94,16 @@ void DocumentPage::buildLeftDock()
     addItem(QStringLiteral("保存对象"));
     addItem(QStringLiteral("保存图像"));
     addItem(QStringLiteral("保存影像/图像堆栈"));
-    addSeparator();
-
-    addItem(QStringLiteral("批处理"));
-    addItem(QStringLiteral("首选项"));
+	addItem(QStringLiteral("保存报告"));
+	addItem(QStringLiteral("批处理"));
+	addItem(QStringLiteral("首选项"));
     addSeparator();
 
     addItem(QStringLiteral("退出"));
 }
 
-/**
- * @brief 构建右侧主内容：横幅/提示/入口按钮/最近项目
+/*
+ *  构建右侧主内容
  */
 QWidget* DocumentPage::buildRightContent(QWidget* parent)
 {
@@ -141,7 +141,7 @@ QWidget* DocumentPage::buildRightContent(QWidget* parent)
     auto bannerLayout = new QVBoxLayout(banner);
     bannerLayout->setContentsMargins(20, 16, 20, 16);
     bannerLayout->setSpacing(8);
-    auto title = new QLabel(QStringLiteral("欢迎使用 CTviewer_demo"), banner);
+    auto title = new QLabel(QStringLiteral("欢迎使用 CTViewer_demo"), banner);
     title->setStyleSheet(QStringLiteral("font-size:24px; font-weight:700;"));
     bannerLayout->addWidget(title);
     auto subtitle = new QLabel(QStringLiteral("继续最近项目，或通过下方模块快速开始您的工业 CT 工作流程。"), banner);
@@ -256,7 +256,7 @@ QWidget* DocumentPage::buildRightContent(QWidget* parent)
 }
 
 /*
- * @brief 连接左侧导航点击逻辑（这里只做演示：发出切页或退出等信号）
+ * 连接左侧导航点击逻辑（这里只做演示：发出切页或退出等信号）
  */
 void DocumentPage::wireLeftDockSignals()
 {
@@ -270,12 +270,12 @@ void DocumentPage::wireLeftDockSignals()
                 || t == QStringLiteral("快速导入")
                 || t == QStringLiteral("导入")
                 || t == QStringLiteral("导出")) {
-                // 示例：这类入口跳去“重建/数据”页面
+                // 这类入口跳去“重建/数据”页面
                 emit requestSwitchTo(QStringLiteral("reconstruct")); // 或 "volume"
                 emit moduleClicked(QStringLiteral("正在进入：%1").arg(t));
             }
             else if (t == QStringLiteral("退出")) {
-                // 这里只能发个意图；真正 close() 由 MainWindow 来做（如需也可发一个自定义信号）
+                // 这里只能发个意图；真正 close() 由 MainWindow 来做
                 emit moduleClicked(QStringLiteral("准备退出"));
             }
             else {
@@ -286,7 +286,7 @@ void DocumentPage::wireLeftDockSignals()
 }
 
 /**
- * @brief 连接右侧按钮/表格逻辑（这里只发信号，主窗口爱用不用）
+ *  连接右侧按钮/表格逻辑（这里只发信号，主窗口爱用不用）
  */
 void DocumentPage::wireRightContentSignals()
 {
@@ -316,7 +316,7 @@ void DocumentPage::wireRightContentSignals()
             goReconstruct();
         });
 
-    // 撤回/保持：这里只提示一下，真实业务由上层接管
+    // 撤回/保持：这里只提示一下
     connect(btnUndo_, &QPushButton::clicked, this, [this] {
         emit moduleClicked(QStringLiteral("已执行撤回操作"));
         });
